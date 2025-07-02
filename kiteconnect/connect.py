@@ -416,6 +416,33 @@ class KiteConnect(object):
         """Exit a CO order."""
         return self.cancel_order(variety, order_id, parent_order_id=parent_order_id)
 
+    def place_spread_order(self, legs, cancel_on_failure=True):
+        """Place multiple legs of a spread sequentially.
+
+        Each leg in ``legs`` should be a dictionary of the same parameters that
+        :py:meth:`place_order` accepts. If ``cancel_on_failure`` is ``True`` and
+        any leg fails to be placed, all previously placed legs are cancelled
+        before the exception is propagated.
+
+        Returns a list of order ids corresponding to each successfully placed
+        leg.
+        """
+
+        order_ids = []
+        for idx, leg in enumerate(legs):
+            try:
+                order_ids.append(self.place_order(**leg))
+            except Exception:
+                if cancel_on_failure and order_ids:
+                    for oid, prev_leg in zip(order_ids, legs[:idx]):
+                        try:
+                            self.cancel_order(prev_leg.get("variety"), oid)
+                        except Exception as e:
+                            log.exception("Failed to cancel order %s: %s", oid, e)
+                raise
+
+        return order_ids
+
     def _format_response(self, data):
         """Parse and format responses."""
 

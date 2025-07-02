@@ -2,6 +2,7 @@
 import pytest
 import responses
 import kiteconnect.exceptions as ex
+from mock import patch
 
 import utils
 
@@ -489,3 +490,95 @@ def test_virtual_contract_note(kiteconnect):
     # CTT tax type
     assert order_book_charges[1]['charges']['transaction_tax_type'] == "ctt"
     assert order_book_charges[1]['charges']['total'] != 0
+
+
+@responses.activate
+def test_place_spread_order_success(kiteconnect):
+    url = "{0}{1}".format(
+        kiteconnect.root,
+        kiteconnect._routes["order.place"].format(variety=kiteconnect.VARIETY_REGULAR),
+    )
+    responses.add(
+        responses.POST,
+        url,
+        body='{"status":"success","data":{"order_id":"111"}}',
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        url,
+        body='{"status":"success","data":{"order_id":"222"}}',
+        content_type="application/json",
+    )
+
+    legs = [
+        {
+            "variety": kiteconnect.VARIETY_REGULAR,
+            "exchange": "NSE",
+            "tradingsymbol": "INFY",
+            "transaction_type": "BUY",
+            "quantity": 1,
+            "product": kiteconnect.PRODUCT_MIS,
+            "order_type": kiteconnect.ORDER_TYPE_MARKET,
+        },
+        {
+            "variety": kiteconnect.VARIETY_REGULAR,
+            "exchange": "NSE",
+            "tradingsymbol": "INFY",
+            "transaction_type": "SELL",
+            "quantity": 1,
+            "product": kiteconnect.PRODUCT_MIS,
+            "order_type": kiteconnect.ORDER_TYPE_MARKET,
+        },
+    ]
+
+    order_ids = kiteconnect.place_spread_order(legs)
+    assert order_ids == ["111", "222"]
+
+
+@responses.activate
+def test_place_spread_order_failure_with_cancel(kiteconnect):
+    url = "{0}{1}".format(
+        kiteconnect.root,
+        kiteconnect._routes["order.place"].format(variety=kiteconnect.VARIETY_REGULAR),
+    )
+    responses.add(
+        responses.POST,
+        url,
+        body='{"status":"success","data":{"order_id":"111"}}',
+        content_type="application/json",
+    )
+    responses.add(
+        responses.POST,
+        url,
+        body='{"status":"error","error_type":"GeneralException","message":"fail"}',
+        content_type="application/json",
+        status=400,
+    )
+
+    legs = [
+        {
+            "variety": kiteconnect.VARIETY_REGULAR,
+            "exchange": "NSE",
+            "tradingsymbol": "INFY",
+            "transaction_type": "BUY",
+            "quantity": 1,
+            "product": kiteconnect.PRODUCT_MIS,
+            "order_type": kiteconnect.ORDER_TYPE_MARKET,
+        },
+        {
+            "variety": kiteconnect.VARIETY_REGULAR,
+            "exchange": "NSE",
+            "tradingsymbol": "INFY",
+            "transaction_type": "SELL",
+            "quantity": 1,
+            "product": kiteconnect.PRODUCT_MIS,
+            "order_type": kiteconnect.ORDER_TYPE_MARKET,
+        },
+    ]
+
+    with patch.object(kiteconnect, "cancel_order") as co:
+        with pytest.raises(ex.GeneralException):
+            kiteconnect.place_spread_order(legs)
+        co.assert_called_once_with(kiteconnect.VARIETY_REGULAR, "111")
+
