@@ -148,6 +148,23 @@ with KiteConnect(api_key="your_api_key") as ck:
 
 Refer to the [Python client documentation](https://kite.trade/docs/pykiteconnect/v4) for the complete list of supported methods.
 
+## Async API usage
+
+```python
+import asyncio
+from kiteconnect import AsyncKiteConnect
+
+async def main():
+    kite = AsyncKiteConnect(api_key="your_api_key")
+    data = await kite.generate_session("request_token_here", api_secret="your_secret")
+    kite.set_access_token(data["access_token"])
+    orders = await kite.orders()
+    await kite.close()
+
+asyncio.run(main())
+```
+
+
 ## WebSocket usage
 
 ```python
@@ -184,6 +201,24 @@ kws.on_close = on_close
 # Infinite loop on the main thread. Nothing after this will run.
 # You have to use the pre-defined callbacks to manage subscriptions.
 kws.connect()
+```
+
+### Async WebSocket usage
+
+```python
+import asyncio
+from kiteconnect import AsyncKiteTicker
+
+async def main():
+    kws = AsyncKiteTicker("your_api_key", "your_access_token")
+
+    async def on_ticks(ws, ticks):
+        print(ticks)
+
+    kws.on_ticks = on_ticks
+    await kws.connect()
+
+asyncio.run(main())
 ```
 
 ## Run unit tests
