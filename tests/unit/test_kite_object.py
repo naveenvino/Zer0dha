@@ -3,6 +3,7 @@ import pytest
 from mock import patch
 import responses
 import requests
+import warnings
 
 from kiteconnect import KiteConnect
 import kiteconnect.exceptions as ex
@@ -93,3 +94,23 @@ class TestKiteConnectObject:
         with patch("requests.packages.urllib3.disable_warnings") as dw:
             KiteConnect(api_key="<API-KEY>")
             dw.assert_not_called()
+
+    def test_warning_filter_updated_when_ssl_disabled(self):
+        """HTTP warnings should be ignored when SSL verification is off."""
+        with warnings.catch_warnings():
+            warnings.resetwarnings()
+            KiteConnect(api_key="<API-KEY>", disable_ssl=True)
+            assert any(
+                f[0] == "ignore" and f[2] == requests.packages.urllib3.exceptions.HTTPWarning
+                for f in warnings.filters
+            )
+
+    def test_warning_filter_unmodified_when_ssl_enabled(self):
+        """HTTP warnings remain enabled when SSL verification is on."""
+        with warnings.catch_warnings():
+            warnings.resetwarnings()
+            KiteConnect(api_key="<API-KEY>")
+            assert not any(
+                f[0] == "ignore" and f[2] == requests.packages.urllib3.exceptions.HTTPWarning
+                for f in warnings.filters
+            )
