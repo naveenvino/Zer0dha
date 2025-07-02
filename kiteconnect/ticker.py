@@ -112,6 +112,14 @@ class KiteTickerClientProtocol(WebSocketClientProtocol):
         # Set current time as last ping time
         self._last_ping_time = time.time()
 
+        try:
+            # Send ping frame to keep connection alive
+            self.sendPing()
+        except Exception as e:
+            log.error("Ping error: {}".format(e))
+            self.dropConnection(abort=True)
+            return
+
         # Call self after X seconds
         self._next_ping = self.factory.reactor.callLater(self.PING_INTERVAL, self._loop_ping)
 
