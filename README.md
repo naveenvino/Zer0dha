@@ -261,6 +261,8 @@ TradingView should POST JSON to `/webhook` using the following structure:
 Each item in `orders` maps to the arguments of
 `KiteConnect.place_order`. Multiple items may be provided to execute
 multi-leg option strategies.
+Exit orders can be submitted via the `exit_orders` key which maps to the
+arguments of `KiteConnect.exit_order`.
 
 ## Changelog
 

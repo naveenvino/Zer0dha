@@ -28,7 +28,10 @@ def test_single_order_defaults_variety(client):
     with patch.object(KiteConnect, "place_order", return_value="101") as po:
         resp = client.post("/webhook", json={"orders": order})
         assert resp.status_code == 200
-        assert resp.get_json() == {"order_ids": ["101"]}
+        assert resp.get_json() == {
+            "order_ids": ["101"],
+            "exit_order_ids": [],
+        }
         po.assert_called_once_with(**expected)
 
 
@@ -56,7 +59,10 @@ def test_multiple_orders(client):
     with patch.object(KiteConnect, "place_order", side_effect=["111", "222"]) as po:
         resp = client.post("/webhook", json={"orders": orders})
         assert resp.status_code == 200
-        assert resp.get_json() == {"order_ids": ["111", "222"]}
+        assert resp.get_json() == {
+            "order_ids": ["111", "222"],
+            "exit_order_ids": [],
+        }
         assert po.call_args_list == [
             call(**orders[0]),
             call(**orders[1])
@@ -67,7 +73,7 @@ def test_no_orders(client):
     with patch.object(KiteConnect, "place_order") as po:
         resp = client.post("/webhook", json={})
         assert resp.status_code == 200
-        assert resp.get_json() == {"order_ids": []}
+        assert resp.get_json() == {"order_ids": [], "exit_order_ids": []}
         po.assert_not_called()
 
 
@@ -76,3 +82,12 @@ def test_invalid_json(client):
         resp = client.post("/webhook", data="{invalid", content_type="application/json")
         assert resp.status_code == 400
         po.assert_not_called()
+
+
+def test_exit_orders(client):
+    exits = [{"variety": "co", "order_id": "abc", "parent_order_id": "p1"}]
+    with patch.object(KiteConnect, "exit_order", return_value="abc") as eo:
+        resp = client.post("/webhook", json={"exit_orders": exits})
+        assert resp.status_code == 200
+        assert resp.get_json() == {"order_ids": [], "exit_order_ids": ["abc"]}
+        eo.assert_called_once_with("co", "abc", parent_order_id="p1")

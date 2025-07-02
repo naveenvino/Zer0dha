@@ -34,6 +34,9 @@ format::
 Every entry in ``orders`` maps directly to the parameters accepted by
 :py:meth:`KiteConnect.place_order`. Multiple entries can be sent to execute
 multi-leg option strategies.
+
+Exit orders can be sent via the ``exit_orders`` (or ``exit``) key which should
+contain the parameters required by :py:meth:`KiteConnect.exit_order`.
 """
 
 import logging
@@ -55,11 +58,15 @@ app = Flask(__name__)
 
 @app.route("/webhook", methods=["POST"])
 def tradingview_webhook():
-    """Receive TradingView webhook and place orders."""
+    """Receive TradingView webhook and place/exit orders."""
     payload = request.get_json(force=True) or {}
     orders = payload.get("orders") or []
+    exit_orders = payload.get("exit_orders") or payload.get("exit") or []
+
     if not isinstance(orders, list):
         orders = [orders]
+    if not isinstance(exit_orders, list):
+        exit_orders = [exit_orders]
 
     order_ids = []
     for order in orders:
@@ -79,7 +86,21 @@ def tradingview_webhook():
         order_id = kite.place_order(**params)
         order_ids.append(order_id)
 
-    return jsonify({"order_ids": order_ids})
+    exited_order_ids = []
+    for exit_order in exit_orders:
+        params = {
+            "variety": exit_order.get("variety", kite.VARIETY_REGULAR),
+            "order_id": exit_order.get("order_id"),
+            "parent_order_id": exit_order.get("parent_order_id"),
+        }
+
+        params = {k: v for k, v in params.items() if v is not None}
+        if "order_id" in params:
+            exited_order_ids.append(
+                kite.exit_order(params.pop("variety"), params.pop("order_id"), **params)
+            )
+
+    return jsonify({"order_ids": order_ids, "exit_order_ids": exited_order_ids})
 
 
 if __name__ == "__main__":
