@@ -4,3 +4,4 @@ pytest-cov>=2.10.1
 flake8>=3.8.4, <= 4.0.1
 mock>=3.0.5
 urllib3<2.0
+autobahn[twisted]==19.11.2
