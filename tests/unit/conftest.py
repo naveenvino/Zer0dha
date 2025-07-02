@@ -36,7 +36,7 @@ def kiteconnect_with_pooling():
 @pytest.fixture()
 def kiteticker():
     """Init Kite ticker object."""
-    kws = KiteTicker("<API-KEY>", "<PUB-TOKEN>", "<USER-ID>", debug=True, reconnect=False)
+    kws = KiteTicker("<API-KEY>", "<PUB-TOKEN>", debug=True, reconnect=False)
     kws.socket_url = "ws://127.0.0.1:9000?api_key=<API-KEY>?&user_id=<USER-ID>&public_token=<PUBLIC-TOKEN>"
     return kws
 
