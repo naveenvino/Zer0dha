@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algo Trading Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <div class="container mx-auto p-8">
+        <h1 class="text-4xl font-bold mb-8 text-center text-blue-400">Algo Trading Platform</h1>
+
+        <!-- API Configuration -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">API Configuration</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="api-key" class="block mb-2 text-sm font-medium text-gray-300">API Key</label>
+                    <input type="password" id="api-key" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Enter your API key">
+                </div>
+                <div>
+                    <label for="api-secret" class="block mb-2 text-sm font-medium text-gray-300">API Secret</label>
+                    <input type="password" id="api-secret" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Enter your API secret">
+                </div>
+                <div>
+                    <label for="access-token" class="block mb-2 text-sm font-medium text-gray-300">Access Token</label>
+                    <input type="text" id="access-token" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Enter your access token">
+                </div>
+                <div class="flex items-end">
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-lg w-full">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy Builder -->
+        <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">Strategy Builder</h2>
+            
+            <div class="mb-6">
+                <label for="strategy-name" class="block mb-2 text-sm font-medium text-gray-300">Strategy Name</label>
+                <input type="text" id="strategy-name" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="e.g., Nifty Weekly Iron Condor">
+            </div>
+
+            <div id="legs-container">
+                <!-- Leg 1 -->
+                <div class="bg-gray-700 p-4 rounded-lg mb-4 leg-template">
+                    <h3 class="text-lg font-semibold mb-3 text-blue-200">Leg 1</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div>
+                            <label for="leg-type" class="block mb-2 text-sm font-medium text-gray-300">Type</label>
+                            <select id="leg-type" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5">
+                                <option>Call</option>
+                                <option>Put</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="leg-action" class="block mb-2 text-sm font-medium text-gray-300">Action</label>
+                            <select id="leg-action" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5">
+                                <option>Sell</option>
+                                <option>Buy</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-300">Strike</label>
+                            <input type="number" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 18000">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-300">Quantity</label>
+                            <input type="number" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 50">
+                        </div>
+                        <div class="flex items-end">
+                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg remove-leg-btn">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="add-leg-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mb-6">Add Leg</button>
+
+            <!-- Exit Conditions -->
+            <div>
+                <h3 class="text-lg font-semibold mb-3 text-blue-200">Exit Conditions</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-300">Stop Loss (%)</label>
+                        <input type="number" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 20">
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-300">Target Profit (%)</label>
+                        <input type="number" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 40">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg">Create Strategy</button>
+            </div>
+        </div>
+
+         <!-- Webhook URL -->
+        <div class="bg-gray-800 rounded-lg p-6 mt-8 shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">TradingView Webhook URL</h2>
+            <div class="flex items-center bg-gray-700 rounded-lg p-2">
+                <label for="webhook-url" class="sr-only">Webhook URL</label>
+                <input type="text" id="webhook-url" class="bg-gray-700 text-white text-sm block w-full p-2.5" value="https://your-app-domain.com/webhook" readonly placeholder="Webhook URL" title="TradingView Webhook URL">
+                <button onclick="copyWebhook()" class="ml-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Copy</button>
+            </div>
+            <p class="text-sm text-gray-400 mt-2">Use this URL in your TradingView alert configuration.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('add-leg-btn').addEventListener('click', function() {
+            const container = document.getElementById('legs-container');
+            const legCount = container.children.length;
+            const newLeg = container.children[0].cloneNode(true);
+            newLeg.querySelector('h3').textContent = `Leg ${legCount + 1}`;
+            
+            // Clear input values in the new leg
+            const inputs = newLeg.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                if (input.type === 'number') {
+                    input.value = '';
+                } else if (input.tagName.toLowerCase() === 'select') {
+                    input.selectedIndex = 0;
+                }
+            });
+
+            container.appendChild(newLeg);
+            updateRemoveButtons();
+        });
+
+        function updateRemoveButtons() {
+            const removeButtons = document.querySelectorAll('.remove-leg-btn');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (document.querySelectorAll('.leg-template').length > 1) {
+                        this.closest('.leg-template').remove();
+                         // Update leg numbers
+                        const legs = document.querySelectorAll('.leg-template');
+                        legs.forEach((leg, index) => {
+                            leg.querySelector('h3').textContent = `Leg ${index + 1}`;
+                        });
+                    }
+                });
+            });
+        }
+        
+        function copyWebhook() {
+            const webhookUrl = document.getElementById('webhook-url');
+            webhookUrl.select();
+            webhookUrl.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand('copy');
+            alert('Webhook URL copied to clipboard!');
+        }
+
+        updateRemoveButtons();
+    </script>
+
+</body>
+</html>
