@@ -30,7 +30,16 @@ PORT = 5010
 HOST = "127.0.0.1"
 
 
-def serializer(obj): return isinstance(obj, (date, datetime, Decimal)) and str(obj)  # noqa
+def serializer(obj):
+    """JSON serializer for ``datetime`` and ``Decimal`` objects.
+
+    Returns ``str(obj)`` if the object is an instance of ``date``, ``datetime``
+    or ``Decimal``. For any other object ``None`` is returned so ``json.dumps``
+    can fall back to default handling (resulting in ``null`` in the output).
+    """
+    if isinstance(obj, (date, datetime, Decimal)):
+        return str(obj)
+    return None
 
 
 # Kite Connect App settings. Go to https://developers.kite.trade/apps/
