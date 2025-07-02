@@ -264,6 +264,10 @@ multi-leg option strategies.
 Exit orders can be submitted via the `exit_orders` key which maps to the
 arguments of `KiteConnect.exit_order`.
 
+An extended example `examples/nifty_option_seller.py` demonstrates how to
+configure a NIFTY option selling strategy via a `/config` endpoint and trigger
+it using TradingView alerts posted to `/webhook`.
+
 ## Changelog
 
 [Check release notes](https://github.com/zerodha/pykiteconnect/releases)
