@@ -114,3 +114,17 @@ class TestKiteConnectObject:
                 f[0] == "ignore" and f[2] == requests.packages.urllib3.exceptions.HTTPWarning
                 for f in warnings.filters
             )
+
+    def test_close_closes_session(self, kiteconnect):
+        """Calling close() should close the underlying requests session."""
+        with patch.object(kiteconnect.reqsession, "close") as c:
+            kiteconnect.close()
+            c.assert_called_once()
+
+    def test_context_manager_closes_session(self):
+        """KiteConnect should support usage as a context manager."""
+        kite = KiteConnect(api_key="<API-KEY>")
+        with patch.object(kite.reqsession, "close") as c:
+            with kite as k:
+                assert k is kite
+            c.assert_called_once()

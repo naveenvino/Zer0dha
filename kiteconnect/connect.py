@@ -222,6 +222,22 @@ class KiteConnect(object):
                 category=requests.packages.urllib3.exceptions.HTTPWarning
             )
 
+    def close(self):
+        """Close the underlying HTTP session."""
+        if getattr(self, "reqsession", None) is not None:
+            self.reqsession.close()
+
+    # ----------------------------------------------------------------
+    # Context manager support
+    # ----------------------------------------------------------------
+    def __enter__(self):
+        """Return self when entering context manager."""
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        """Close the HTTP session on exiting context manager."""
+        self.close()
+
     def set_session_expiry_hook(self, method):
         """
         Set a callback hook for session (`TokenError` -- timeout, expiry etc.) errors.

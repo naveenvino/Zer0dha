@@ -128,6 +128,13 @@ kite.cancel_mf_order(order_id="order_id")
 
 # Get mutual fund instruments
 kite.mf_instruments()
+
+# Close the session when done
+kite.close()
+
+# Or use as a context manager
+with KiteConnect(api_key="your_api_key") as ck:
+    ck.instruments()
 ```
 
 Refer to the [Python client documentation](https://kite.trade/docs/pykiteconnect/v4) for the complete list of supported methods.
