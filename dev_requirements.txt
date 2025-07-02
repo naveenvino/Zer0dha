@@ -8,3 +8,4 @@ autobahn[twisted]==19.11.2
 flask>=3.0
 service_identity
 python-dateutil
+mypy
