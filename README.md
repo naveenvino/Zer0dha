@@ -268,6 +268,32 @@ An extended example `examples/nifty_option_seller.py` demonstrates how to
 configure a NIFTY option selling strategy via a `/config` endpoint and trigger
 it using TradingView alerts posted to `/webhook`.
 
+## Command line usage
+
+`kiteconnect.cli` exposes a small command line interface that can be invoked
+with `python -m kiteconnect.cli`.
+
+Generate an access token after login:
+
+```sh
+python -m kiteconnect.cli login --api-key <api_key> \
+    --api-secret <api_secret> --request-token <request_token>
+```
+
+Place an order:
+
+```sh
+python -m kiteconnect.cli place-order --api-key <api_key> \
+    --access-token <access_token> --symbol INFY --exchange NSE \
+    --transaction-type BUY --quantity 1 --order-type MARKET --product CNC
+```
+
+List holdings:
+
+```sh
+python -m kiteconnect.cli holdings --api-key <api_key> --access-token <access_token>
+```
+
 ## Changelog
 
 [Check release notes](https://github.com/zerodha/pykiteconnect/releases)
