@@ -264,6 +264,33 @@ multi-leg option strategies.
 Exit orders can be submitted via the `exit_orders` key which maps to the
 arguments of `KiteConnect.exit_order`.
 
+### Multi-leg webhook example
+
+Option strategies with hedging legs can be executed atomically using
+`examples/multileg_webhook.py`. It exposes the same `/webhook` endpoint but
+expects a `legs` list which is forwarded to
+`KiteConnect.place_spread_order`.
+
+```sh
+export KITE_API_KEY="your_api_key"
+export ACCESS_TOKEN="your_access_token"
+python examples/multileg_webhook.py
+```
+
+Sample TradingView alert::
+
+```json
+{
+  "legs": [
+    {"symbol": "NIFTY24AUG17450CE", "transaction_type": "SELL", "quantity": 75},
+    {"symbol": "NIFTY24AUG17350CE", "transaction_type": "BUY", "quantity": 75}
+  ]
+}
+```
+
+Exit orders can be sent via the `exit` key which maps to
+`KiteConnect.exit_order`.
+
 ## Changelog
 
 [Check release notes](https://github.com/zerodha/pykiteconnect/releases)
