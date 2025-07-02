@@ -213,8 +213,8 @@ class KiteConnect(object):
             reqadapter = requests.adapters.HTTPAdapter(**pool)
             self.reqsession.mount("https://", reqadapter)
 
-        # disable requests SSL warning when SSL verification is turned off
-        if self.disable_ssl:
+        # Disable requests SSL warnings only when verification is turned off
+        if disable_ssl:
             requests.packages.urllib3.disable_warnings()
         else:
             warnings.filterwarnings(
