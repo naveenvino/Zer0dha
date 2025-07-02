@@ -259,15 +259,29 @@ pdoc --html --html-dir docs kiteconnect
 ## TradingView integration
 
 `examples/tradingview_webhook.py` exposes a small Flask server that accepts
-TradingView webhooks and forwards them to `KiteConnect`. Before running it,
-export the required credentials:
+TradingView webhooks and forwards them to `KiteConnect`.
 
-```sh
-export KITE_API_KEY="your_api_key"
-export KITE_API_SECRET="your_api_secret"
-export ACCESS_TOKEN="your_access_token"
-python examples/tradingview_webhook.py
-```
+### Deployment steps
+
+1. **Install dependencies**
+   ```sh
+   pip install Flask && pip install -e .
+   ```
+2. **Export credentials** – the server relies on a few environment variables:
+   - `KITE_API_KEY` – your API key from the Kite developer console.
+   - `KITE_API_SECRET` – API secret used when generating the access token.
+   - `ACCESS_TOKEN` – a valid token obtained via `KiteConnect.generate_session`.
+
+   ```sh
+   export KITE_API_KEY="your_api_key"
+   export KITE_API_SECRET="your_api_secret"
+   export ACCESS_TOKEN="your_access_token"
+   ```
+3. **Start the server**
+   ```sh
+   python examples/tradingview_webhook.py
+   ```
+4. **Configure TradingView** to POST alerts to `http://<server-ip>:5000/webhook`.
 
 TradingView should POST JSON to `/webhook` using the following structure:
 
@@ -297,6 +311,8 @@ TradingView should POST JSON to `/webhook` using the following structure:
 Each item in `orders` maps to the arguments of
 `KiteConnect.place_order`. Multiple items may be provided to execute
 multi-leg option strategies.
+For a standalone demonstration of multi-leg spreads refer to
+[`examples/multi_leg_option.py`](examples/multi_leg_option.py).
 Exit orders can be submitted via the `exit_orders` key which maps to the
 arguments of `KiteConnect.exit_order`.
 
