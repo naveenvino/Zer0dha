@@ -268,6 +268,10 @@ An extended example `examples/nifty_option_seller.py` demonstrates how to
 configure a NIFTY option selling strategy via a `/config` endpoint and trigger
 it using TradingView alerts posted to `/webhook`.
 
+The script `examples/option_seller_with_stoploss.py` shows a standalone
+automation that sells a single option contract and places a corresponding
+stop-loss order for risk management.
+
 ## Changelog
 
 [Check release notes](https://github.com/zerodha/pykiteconnect/releases)
