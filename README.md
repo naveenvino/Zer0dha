@@ -222,42 +222,45 @@ pdoc --html --html-dir docs kiteconnect
 
 ## TradingView integration
 
-`examples/tradingview_webhook.py` demonstrates a tiny Flask server that can
-receive alerts from TradingView and place orders via `KiteConnect`.
+`examples/tradingview_webhook.py` exposes a small Flask server that accepts
+TradingView webhooks and forwards them to `KiteConnect`. Before running it,
+export the required credentials:
 
-TradingView alerts should POST a JSON payload to `/webhook` with the following
-structure:
+```sh
+export KITE_API_KEY="your_api_key"
+export KITE_API_SECRET="your_api_secret"
+export ACCESS_TOKEN="your_access_token"
+python examples/tradingview_webhook.py
+```
+
+TradingView should POST JSON to `/webhook` using the following structure:
 
 ```json
 {
-  "api_key": "your_api_key",
-  "access_token": "your_access_token",
   "orders": [
     {
-      "exchange": "NSE",
-      "tradingsymbol": "SBIN",
+      "symbol": "NIFTY24AUG17450CE",
       "transaction_type": "BUY",
-      "quantity": 1,
+      "quantity": 75,
+      "exchange": "NFO",
       "order_type": "MARKET",
-      "product": "CNC",
-      "variety": "regular"
+      "product": "MIS"
+    },
+    {
+      "symbol": "NIFTY24AUG17650CE",
+      "transaction_type": "SELL",
+      "quantity": 75,
+      "exchange": "NFO",
+      "order_type": "MARKET",
+      "product": "MIS"
     }
   ]
 }
 ```
 
-The values inside each order map directly to the parameters accepted by
-`KiteConnect.place_order`. Multiple orders can be sent in the `orders` list to
-execute multi-leg strategies.
-
-Run the example with:
-
-```sh
-python examples/tradingview_webhook.py
-```
-
-Then configure your TradingView alert to POST the above JSON to the running
-server.
+Each item in `orders` maps to the arguments of
+`KiteConnect.place_order`. Multiple items may be provided to execute
+multi-leg option strategies.
 
 ## Changelog
 
