@@ -216,6 +216,11 @@ class KiteConnect(object):
         # disable requests SSL warning when SSL verification is turned off
         if self.disable_ssl:
             requests.packages.urllib3.disable_warnings()
+        else:
+            warnings.filterwarnings(
+                "default",
+                category=requests.packages.urllib3.exceptions.HTTPWarning
+            )
 
     def set_session_expiry_hook(self, method):
         """
