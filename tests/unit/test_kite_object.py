@@ -81,3 +81,15 @@ class TestKiteConnectObject:
     def test_invalidate_token(self, kiteconnect):
         resp = kiteconnect.invalidate_access_token(access_token="<ACCESS-TOKEN>")
         assert resp["message"] == "token invalidated"
+
+    def test_disable_warnings_called_when_ssl_disabled(self):
+        """Ensure urllib3 warnings are disabled when disable_ssl is True."""
+        with patch("requests.packages.urllib3.disable_warnings") as dw:
+            KiteConnect(api_key="<API-KEY>", disable_ssl=True)
+            dw.assert_called_once()
+
+    def test_disable_warnings_not_called_by_default(self):
+        """Ensure urllib3 warnings remain when disable_ssl is False."""
+        with patch("requests.packages.urllib3.disable_warnings") as dw:
+            KiteConnect(api_key="<API-KEY>")
+            dw.assert_not_called()
