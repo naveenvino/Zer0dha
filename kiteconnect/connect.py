@@ -735,7 +735,14 @@ class KiteConnect(object):
             - `price` The min or max price to execute the order at (for LIMIT orders)
         """
         # Validations.
-        assert trigger_type in [self.GTT_TYPE_OCO, self.GTT_TYPE_SINGLE]
+        if trigger_type not in [self.GTT_TYPE_OCO, self.GTT_TYPE_SINGLE]:
+            raise ex.InputException(
+                "invalid `trigger_type` %s. Supported values are `%s` or `%s`" % (
+                    trigger_type,
+                    self.GTT_TYPE_SINGLE,
+                    self.GTT_TYPE_OCO,
+                )
+            )
         condition, gtt_orders = self._get_gtt_payload(trigger_type, tradingsymbol, exchange, trigger_values, last_price, orders)
 
         return self._post("gtt.place", params={

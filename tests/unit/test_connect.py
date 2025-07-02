@@ -316,6 +316,26 @@ def test_place_gtt(kiteconnect):
 
 
 @responses.activate
+def test_place_gtt_invalid_trigger_type(kiteconnect):
+    """Ensure place_gtt raises InputException for invalid trigger type."""
+    with pytest.raises(ex.InputException):
+        kiteconnect.place_gtt(
+            trigger_type="invalid",
+            tradingsymbol="INFY",
+            exchange="NSE",
+            trigger_values=[1],
+            last_price=800,
+            orders=[{
+                "transaction_type": kiteconnect.TRANSACTION_TYPE_BUY,
+                "quantity": 1,
+                "order_type": kiteconnect.ORDER_TYPE_LIMIT,
+                "product": kiteconnect.PRODUCT_CNC,
+                "price": 1,
+            }]
+        )
+
+
+@responses.activate
 def test_modify_gtt(kiteconnect):
     """Test modify gtt order."""
     responses.add(
