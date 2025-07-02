@@ -264,6 +264,11 @@ multi-leg option strategies.
 Exit orders can be submitted via the `exit_orders` key which maps to the
 arguments of `KiteConnect.exit_order`.
 
+For a NIFTY weekly option seller workflow with an automatic hedge, see
+`examples/nifty_weekly_webhook.py`. The server computes option symbols from
+the provided expiry and strike and places a two-legged spread (sell leg with a
+hedging buy leg) when it receives a TradingView alert.
+
 ## Changelog
 
 [Check release notes](https://github.com/zerodha/pykiteconnect/releases)
