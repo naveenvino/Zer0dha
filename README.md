@@ -264,6 +264,24 @@ multi-leg option strategies.
 Exit orders can be submitted via the `exit_orders` key which maps to the
 arguments of `KiteConnect.exit_order`.
 
+### NIFTY option seller webhook
+
+`examples/nifty_option_seller_webhook.py` implements a basic 4-leg short
+strangle with hedges. TradingView should POST JSON like the following:
+
+```json
+{
+  "strike": 17650,
+  "expiry": "24AUG",
+  "quantity": 50,
+  "hedge_offset": 200
+}
+```
+
+This places sell orders for CE and PE at the given strike and buy orders
+`hedge_offset` points away. Pass `exit_order_ids` in the payload to close
+existing orders.
+
 ## Changelog
 
 [Check release notes](https://github.com/zerodha/pykiteconnect/releases)
