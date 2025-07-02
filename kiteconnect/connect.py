@@ -213,8 +213,9 @@ class KiteConnect(object):
             reqadapter = requests.adapters.HTTPAdapter(**pool)
             self.reqsession.mount("https://", reqadapter)
 
-        # disable requests SSL warning
-        requests.packages.urllib3.disable_warnings()
+        # disable requests SSL warning when SSL verification is turned off
+        if self.disable_ssl:
+            requests.packages.urllib3.disable_warnings()
 
     def set_session_expiry_hook(self, method):
         """
