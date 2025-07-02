@@ -1,5 +1,13 @@
+import os
 import pytest
 from unittest.mock import patch, call
+
+# Ensure required environment variables are available before importing
+# the webhook example. These defaults let the import succeed without
+# external setup.
+os.environ.setdefault("KITE_API_KEY", "test_key")
+os.environ.setdefault("KITE_API_SECRET", "test_secret")
+os.environ.setdefault("ACCESS_TOKEN", "test_token")
 
 from examples import tradingview_webhook
 from kiteconnect.connect import KiteConnect
