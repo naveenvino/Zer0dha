@@ -10,158 +10,298 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .leg-template .grid {
+            align-items: end;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
 
-    <div class="container mx-auto p-8">
+    <div class="container mx-auto p-4 md:p-8">
         <h1 class="text-4xl font-bold mb-8 text-center text-blue-400">Algo Trading Platform</h1>
+
+        <!-- Status Message -->
+        <div id="status-message" class="hidden p-4 mb-4 text-sm rounded-lg" role="alert"></div>
 
         <!-- API Configuration -->
         <div class="bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
             <h2 class="text-2xl font-semibold mb-4 text-blue-300">API Configuration</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="api-key" class="block mb-2 text-sm font-medium text-gray-300">API Key</label>
-                    <input type="password" id="api-key" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Enter your API key">
+            <form id="api-config-form">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="api-key" class="block mb-2 text-sm font-medium text-gray-300">API Key</label>
+                        <input type="password" id="api-key" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="api-secret" class="block mb-2 text-sm font-medium text-gray-300">API Secret</label>
+                        <input type="password" id="api-secret" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="access-token" class="block mb-2 text-sm font-medium text-gray-300">Access Token</label>
+                        <input type="text" id="access-token" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-lg w-full">Save Configuration</button>
+                    </div>
                 </div>
-                <div>
-                    <label for="api-secret" class="block mb-2 text-sm font-medium text-gray-300">API Secret</label>
-                    <input type="password" id="api-secret" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Enter your API secret">
-                </div>
-                <div>
-                    <label for="access-token" class="block mb-2 text-sm font-medium text-gray-300">Access Token</label>
-                    <input type="text" id="access-token" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Enter your access token">
-                </div>
-                <div class="flex items-end">
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-lg w-full">Save Configuration</button>
-                </div>
+            </form>
+        </div>
+        
+        <!-- Saved Strategies Display -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">Saved Strategies</h2>
+            <div id="saved-strategies-list" class="space-y-2">
+                <!-- Strategies will be loaded here -->
+                <p class="text-gray-400">No strategies saved yet.</p>
             </div>
         </div>
 
         <!-- Strategy Builder -->
         <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
             <h2 class="text-2xl font-semibold mb-4 text-blue-300">Strategy Builder</h2>
-            
-            <div class="mb-6">
-                <label for="strategy-name" class="block mb-2 text-sm font-medium text-gray-300">Strategy Name</label>
-                <input type="text" id="strategy-name" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="e.g., Nifty Weekly Iron Condor">
-            </div>
+            <form id="strategy-form">
+                <div class="mb-6">
+                    <label for="strategy-name" class="block mb-2 text-sm font-medium text-gray-300">Strategy Name</label>
+                    <input type="text" id="strategy-name" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="e.g., Nifty Weekly Iron Condor" required>
+                </div>
 
-            <div id="legs-container">
-                <!-- Leg 1 -->
-                <div class="bg-gray-700 p-4 rounded-lg mb-4 leg-template">
-                    <h3 class="text-lg font-semibold mb-3 text-blue-200">Leg 1</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div>
-                            <label for="leg-type" class="block mb-2 text-sm font-medium text-gray-300">Type</label>
-                            <select id="leg-type" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5">
-                                <option>Call</option>
-                                <option>Put</option>
-                            </select>
+                <div id="legs-container">
+                    <!-- Leg 1 -->
+                    <div class="bg-gray-700 p-4 rounded-lg mb-4 leg-template">
+                        <div class="flex justify-between items-center mb-3">
+                             <h3 class="text-lg font-semibold text-blue-200">Leg 1</h3>
+                             <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg remove-leg-btn">Remove</button>
                         </div>
-                        <div>
-                            <label for="leg-action" class="block mb-2 text-sm font-medium text-gray-300">Action</label>
-                            <select id="leg-action" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5">
-                                <option>Sell</option>
-                                <option>Buy</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-300">Strike</label>
-                            <input type="number" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 18000">
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-300">Quantity</label>
-                            <input type="number" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 50">
-                        </div>
-                        <div class="flex items-end">
-                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg remove-leg-btn">Remove</button>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-300">Type</label>
+                                <select class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5 leg-type" required>
+                                    <option>CE</option>
+                                    <option>PE</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-300">Action</label>
+                                <select class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5 leg-action" required>
+                                    <option>SELL</option>
+                                    <option>BUY</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-300">Strike Offset</label>
+                                <input type="number" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5 leg-strike" placeholder="e.g., 100" required>
+                                <p class="text-xs text-gray-400 mt-1">Offset from ATM</p>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-300">Quantity</label>
+                                <input type="number" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5 leg-quantity" placeholder="e.g., 50" required>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <button id="add-leg-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mb-6">Add Leg</button>
+                <button type="button" id="add-leg-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mb-6">Add Leg</button>
 
-            <!-- Exit Conditions -->
-            <div>
-                <h3 class="text-lg font-semibold mb-3 text-blue-200">Exit Conditions</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-300">Stop Loss (%)</label>
-                        <input type="number" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 20">
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-300">Target Profit (%)</label>
-                        <input type="number" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 40">
+                <!-- Exit Conditions -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-3 text-blue-200">Exit Conditions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-300">Stop Loss (%)</label>
+                            <input type="number" id="stop-loss" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 20">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-300">Target Profit (%)</label>
+                            <input type="number" id="target-profit" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 40">
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="mt-8 text-center">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg">Create Strategy</button>
-            </div>
+                
+                <div class="mt-8 text-center">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg">Create Strategy</button>
+                </div>
+            </form>
         </div>
 
          <!-- Webhook URL -->
         <div class="bg-gray-800 rounded-lg p-6 mt-8 shadow-lg">
             <h2 class="text-2xl font-semibold mb-4 text-blue-300">TradingView Webhook URL</h2>
+             <p class="text-gray-400 mb-2">Use this URL in your TradingView alert's "Webhook URL" field. The body should be a JSON object like: <code class="bg-gray-700 p-1 rounded">{"strategy_name": "Your Strategy Name"}</code></p>
             <div class="flex items-center bg-gray-700 rounded-lg p-2">
-                <label for="webhook-url" class="sr-only">Webhook URL</label>
-                <input type="text" id="webhook-url" class="bg-gray-700 text-white text-sm block w-full p-2.5" value="https://your-app-domain.com/webhook" readonly placeholder="Webhook URL" title="TradingView Webhook URL">
-                <button onclick="copyWebhook()" class="ml-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Copy</button>
+                <input type="text" id="webhook-url" class="bg-gray-700 text-white text-sm block w-full p-2.5" value="" readonly>
+                <button type="button" onclick="copyWebhook()" class="ml-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Copy</button>
             </div>
-            <p class="text-sm text-gray-400 mt-2">Use this URL in your TradingView alert configuration.</p>
         </div>
     </div>
 
     <script>
+        const API_BASE_URL = window.location.origin;
+
+        // --- Helper Functions ---
+        function showStatus(message, isError = false) {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.textContent = message;
+            statusDiv.className = `p-4 mb-4 text-sm rounded-lg ${isError ? 'bg-red-900 text-red-300' : 'bg-green-900 text-green-300'}`;
+            statusDiv.classList.remove('hidden');
+            setTimeout(() => statusDiv.classList.add('hidden'), 5000);
+        }
+
+        // --- API Configuration ---
+        const apiForm = document.getElementById('api-config-form');
+        apiForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const config = {
+                api_key: document.getElementById('api-key').value,
+                api_secret: document.getElementById('api-secret').value,
+                access_token: document.getElementById('access-token').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    showStatus(result.message);
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                showStatus(`Error saving config: ${error.message}`, true);
+            }
+        });
+
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/config`);
+                if (!response.ok) return;
+                const config = await response.json();
+                document.getElementById('api-key').value = config.api_key || '';
+                document.getElementById('api-secret').value = config.api_secret || '';
+                document.getElementById('access-token').value = config.access_token || '';
+            } catch (error) {
+                // Fail silently if config can't be loaded
+                console.error("Could not load API config:", error);
+            }
+        }
+
+        // --- Strategy Management ---
+        const strategyForm = document.getElementById('strategy-form');
+        strategyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const legs = [];
+            document.querySelectorAll('.leg-template').forEach(legEl => {
+                legs.push({
+                    type: legEl.querySelector('.leg-type').value,
+                    action: legEl.querySelector('.leg-action').value,
+                    strike_offset: parseInt(legEl.querySelector('.leg-strike').value),
+                    quantity: parseInt(legEl.querySelector('.leg-quantity').value)
+                });
+            });
+
+            const strategy = {
+                name: document.getElementById('strategy-name').value,
+                stop_loss: parseFloat(document.getElementById('stop-loss').value) || null,
+                target_profit: parseFloat(document.getElementById('target-profit').value) || null,
+                legs: legs
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/strategies`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(strategy)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    showStatus(result.message);
+                    strategyForm.reset();
+                    while(document.querySelectorAll('.leg-template').length > 1) {
+                        document.querySelector('.leg-template:last-child').remove();
+                    }
+                    loadStrategies(); // Refresh the list
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                showStatus(`Error saving strategy: ${error.message}`, true);
+            }
+        });
+
+        async function loadStrategies() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/strategies`);
+                if (!response.ok) return;
+                const strategies = await response.json();
+                const listEl = document.getElementById('saved-strategies-list');
+                listEl.innerHTML = ''; // Clear existing list
+
+                if (strategies.length === 0) {
+                    listEl.innerHTML = '<p class="text-gray-400">No strategies saved yet.</p>';
+                    return;
+                }
+
+                strategies.forEach(s => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-gray-700 p-3 rounded-lg flex justify-between items-center';
+                    div.innerHTML = `<span class="font-medium text-blue-200">${s.name}</span> <span class="text-sm text-gray-300">${s.legs.length} legs</span>`;
+                    listEl.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Could not load strategies:", error);
+                const listEl = document.getElementById('saved-strategies-list');
+                listEl.innerHTML = '<p class="text-red-400">Could not load strategies.</p>';
+            }
+        }
+
+
+        // --- Dynamic Leg Management ---
         document.getElementById('add-leg-btn').addEventListener('click', function() {
             const container = document.getElementById('legs-container');
             const legCount = container.children.length;
             const newLeg = container.children[0].cloneNode(true);
             newLeg.querySelector('h3').textContent = `Leg ${legCount + 1}`;
-            
-            // Clear input values in the new leg
-            const inputs = newLeg.querySelectorAll('input, select');
-            inputs.forEach(input => {
-                if (input.type === 'number') {
-                    input.value = '';
-                } else if (input.tagName.toLowerCase() === 'select') {
-                    input.selectedIndex = 0;
-                }
-            });
-
+            newLeg.querySelectorAll('input, select').forEach(input => input.value = '');
             container.appendChild(newLeg);
             updateRemoveButtons();
         });
 
         function updateRemoveButtons() {
-            const removeButtons = document.querySelectorAll('.remove-leg-btn');
-            removeButtons.forEach(button => {
-                button.addEventListener('click', function() {
+            document.querySelectorAll('.remove-leg-btn').forEach(button => {
+                button.onclick = function() {
                     if (document.querySelectorAll('.leg-template').length > 1) {
                         this.closest('.leg-template').remove();
-                         // Update leg numbers
-                        const legs = document.querySelectorAll('.leg-template');
-                        legs.forEach((leg, index) => {
+                        document.querySelectorAll('.leg-template').forEach((leg, index) => {
                             leg.querySelector('h3').textContent = `Leg ${index + 1}`;
                         });
+                    } else {
+                        showStatus("A strategy must have at least one leg.", true);
                     }
-                });
+                };
             });
         }
-        
+
+        // --- Webhook URL ---
         function copyWebhook() {
             const webhookUrl = document.getElementById('webhook-url');
             webhookUrl.select();
-            webhookUrl.setSelectionRange(0, 99999); // For mobile devices
             document.execCommand('copy');
-            alert('Webhook URL copied to clipboard!');
+            showStatus('Webhook URL copied to clipboard!');
+        }
+        
+        function setWebhookUrl() {
+             document.getElementById('webhook-url').value = `${API_BASE_URL}/webhook`;
         }
 
-        updateRemoveButtons();
+        // --- Initial Load ---
+        window.onload = () => {
+            loadConfig();
+            loadStrategies();
+            updateRemoveButtons();
+            setWebhookUrl();
+        };
     </script>
 
 </body>
