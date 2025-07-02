@@ -179,6 +179,14 @@ kws.connect()
 
 ## Run unit tests
 
+Install the development dependencies first:
+
+```sh
+pip install -r dev_requirements.txt
+```
+
+This includes `autobahn[twisted]==19.11.2` which is required for the WebSocket tests.
+
 ```sh
 python setup.py test
 ```
