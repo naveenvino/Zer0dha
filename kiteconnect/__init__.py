@@ -111,5 +111,13 @@ from __future__ import unicode_literals, absolute_import
 from kiteconnect import exceptions
 from kiteconnect.connect import KiteConnect
 from kiteconnect.ticker import KiteTicker
+from kiteconnect.async_connect import AsyncKiteConnect
+from kiteconnect.async_ticker import AsyncKiteTicker
 
-__all__ = ["KiteConnect", "KiteTicker", "exceptions"]
+__all__ = [
+    "KiteConnect",
+    "KiteTicker",
+    "AsyncKiteConnect",
+    "AsyncKiteTicker",
+    "exceptions",
+]
