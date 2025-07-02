@@ -53,7 +53,7 @@ class KiteConnect(object):
     ORDER_TYPE_SLM = "SL-M"
     ORDER_TYPE_SL = "SL"
 
-    # Varities
+    # Varieties
     VARIETY_REGULAR = "regular"
     VARIETY_CO = "co"
     VARIETY_AMO = "amo"
