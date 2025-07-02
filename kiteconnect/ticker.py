@@ -15,6 +15,7 @@ import struct
 import logging
 import threading
 from datetime import datetime
+from typing import Any, Callable, Dict, List, Optional
 from twisted.internet import reactor, ssl
 from twisted.python import log as twisted_log
 from twisted.internet.protocol import ReconnectingClientFactory
@@ -37,12 +38,12 @@ class KiteTickerClientProtocol(WebSocketClientProtocol):
     _last_pong_time = None
     _last_ping_time = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize protocol with all options passed from factory."""
         super(KiteTickerClientProtocol, self).__init__(*args, **kwargs)
 
     # Overide method
-    def onConnect(self, response):  # noqa
+    def onConnect(self, response: Any) -> None:  # noqa
         """Called when WebSocket server connection was established"""
         self.factory.ws = self
 
@@ -53,7 +54,7 @@ class KiteTickerClientProtocol(WebSocketClientProtocol):
         self.factory.resetDelay()
 
     # Overide method
-    def onOpen(self):  # noqa
+    def onOpen(self) -> None:  # noqa
         """Called when the initial WebSocket opening handshake was completed."""
         # send ping
         self._loop_ping()
@@ -64,13 +65,13 @@ class KiteTickerClientProtocol(WebSocketClientProtocol):
             self.factory.on_open(self)
 
     # Overide method
-    def onMessage(self, payload, is_binary):  # noqa
+    def onMessage(self, payload: Any, is_binary: bool) -> None:  # noqa
         """Called when text or binary message is received."""
         if self.factory.on_message:
             self.factory.on_message(self, payload, is_binary)
 
     # Overide method
-    def onClose(self, was_clean, code, reason):  # noqa
+    def onClose(self, was_clean: bool, code: int, reason: Any) -> None:  # noqa
         """Called when connection is closed."""
         if not was_clean:
             if self.factory.on_error:
@@ -89,7 +90,7 @@ class KiteTickerClientProtocol(WebSocketClientProtocol):
         if self._next_pong_check:
             self._next_pong_check.cancel()
 
-    def onPong(self, response):  # noqa
+    def onPong(self, response: Any) -> None:  # noqa
         """Called when pong message is received."""
         if self._last_pong_time and self.factory.debug:
             log.debug("last pong was {} seconds back.".format(time.time() - self._last_pong_time))
@@ -103,7 +104,7 @@ class KiteTickerClientProtocol(WebSocketClientProtocol):
     Custom helper and exposed methods.
     """
 
-    def _loop_ping(self):  # noqa
+    def _loop_ping(self) -> None:  # noqa
         """Start a ping loop where it sends ping message every X seconds."""
         if self.factory.debug:
             if self._last_ping_time:
@@ -123,7 +124,7 @@ class KiteTickerClientProtocol(WebSocketClientProtocol):
         # Call self after X seconds
         self._next_ping = self.factory.reactor.callLater(self.PING_INTERVAL, self._loop_ping)
 
-    def _loop_pong_check(self):
+    def _loop_pong_check(self) -> None:
         """
         Timer sortof to check if connection is still there.
 
@@ -152,7 +153,7 @@ class KiteTickerClientFactory(WebSocketClientFactory, ReconnectingClientFactory)
 
     _last_connection_time = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize with default callback method values."""
         self.debug = False
         self.ws = None
@@ -166,14 +167,14 @@ class KiteTickerClientFactory(WebSocketClientFactory, ReconnectingClientFactory)
 
         super(KiteTickerClientFactory, self).__init__(*args, **kwargs)
 
-    def startedConnecting(self, connector):  # noqa
+    def startedConnecting(self, connector: Any) -> None:  # noqa
         """On connecting start or reconnection."""
         if not self._last_connection_time and self.debug:
             log.debug("Start WebSocket connection.")
 
         self._last_connection_time = time.time()
 
-    def clientConnectionFailed(self, connector, reason):  # noqa
+    def clientConnectionFailed(self, connector: Any, reason: Any) -> None:  # noqa
         """On connection failure (When connect request fails)"""
         if self.retries > 0:
             log.error("Retrying connection. Retry attempt count: {}. Next retry in around: {} seconds".format(self.retries, int(round(self.delay))))
@@ -186,7 +187,7 @@ class KiteTickerClientFactory(WebSocketClientFactory, ReconnectingClientFactory)
         self.retry(connector)
         self.send_noreconnect()
 
-    def clientConnectionLost(self, connector, reason):  # noqa
+    def clientConnectionLost(self, connector: Any, reason: Any) -> None:  # noqa
         """On connection lost (When ongoing connection got disconnected)."""
         if self.retries > 0:
             # on reconnect callback
@@ -197,7 +198,7 @@ class KiteTickerClientFactory(WebSocketClientFactory, ReconnectingClientFactory)
         self.retry(connector)
         self.send_noreconnect()
 
-    def send_noreconnect(self):
+    def send_noreconnect(self) -> None:
         """Callback `no_reconnect` if max retries are exhausted."""
         if self.maxRetries is not None and (self.retries > self.maxRetries):
             if self.debug:
@@ -408,9 +409,17 @@ class KiteTicker(object):
     # Maximum number or retries user can set
     _maximum_reconnect_max_tries = 300
 
-    def __init__(self, api_key, access_token, debug=False, root=None,
-                 reconnect=True, reconnect_max_tries=RECONNECT_MAX_TRIES, reconnect_max_delay=RECONNECT_MAX_DELAY,
-                 connect_timeout=CONNECT_TIMEOUT):
+    def __init__(
+        self,
+        api_key: str,
+        access_token: str,
+        debug: bool = False,
+        root: Optional[str] = None,
+        reconnect: bool = True,
+        reconnect_max_tries: int = RECONNECT_MAX_TRIES,
+        reconnect_max_delay: int = RECONNECT_MAX_DELAY,
+        connect_timeout: int = CONNECT_TIMEOUT,
+    ) -> None:
         """
         Initialise websocket client instance.
 
@@ -477,7 +486,7 @@ class KiteTicker(object):
         # List of current subscribed tokens
         self.subscribed_tokens = {}
 
-    def _create_connection(self, url, **kwargs):
+    def _create_connection(self, url: str, **kwargs: Any) -> None:
         """Create a WebSocket client connection."""
         self.factory = KiteTickerClientFactory(url, **kwargs)
 
@@ -498,10 +507,12 @@ class KiteTicker(object):
         self.factory.maxDelay = self.reconnect_max_delay
         self.factory.maxRetries = self.reconnect_max_tries
 
-    def _user_agent(self):
+    def _user_agent(self) -> str:
         return (__title__ + "-python/").capitalize() + __version__
 
-    def connect(self, threaded=False, disable_ssl_verification=False, proxy=None):
+    def connect(
+        self, threaded: bool = False, disable_ssl_verification: bool = False, proxy: Optional[Dict[str, Any]] = None
+    ) -> None:
         """
         Establish a websocket connection.
 
@@ -544,35 +555,35 @@ class KiteTicker(object):
             else:
                 reactor.run(**opts)
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         """Check if WebSocket connection is established."""
         if self.ws and self.ws.state == self.ws.STATE_OPEN:
             return True
         else:
             return False
 
-    def _close(self, code=None, reason=None):
+    def _close(self, code: Optional[int] = None, reason: Optional[str] = None) -> None:
         """Close the WebSocket connection."""
         if self.ws:
             self.ws.sendClose(code, reason)
 
-    def close(self, code=None, reason=None):
+    def close(self, code: Optional[int] = None, reason: Optional[str] = None) -> None:
         """Close the WebSocket connection."""
         self.stop_retry()
         self._close(code, reason)
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the event loop. Should be used if main thread has to be closed in `on_close` method.
         Reconnection mechanism cannot happen past this method
         """
         reactor.stop()
 
-    def stop_retry(self):
+    def stop_retry(self) -> None:
         """Stop auto retry when it is in progress."""
         if self.factory:
             self.factory.stopTrying()
 
-    def subscribe(self, instrument_tokens):
+    def subscribe(self, instrument_tokens: List[int]) -> bool:
         """
         Subscribe to a list of instrument_tokens.
 
@@ -591,7 +602,7 @@ class KiteTicker(object):
             self._close(reason="Error while subscribe: {}".format(str(e)))
             raise
 
-    def unsubscribe(self, instrument_tokens):
+    def unsubscribe(self, instrument_tokens: List[int]) -> bool:
         """
         Unsubscribe the given list of instrument_tokens.
 
@@ -613,7 +624,7 @@ class KiteTicker(object):
             self._close(reason="Error while unsubscribe: {}".format(str(e)))
             raise
 
-    def set_mode(self, mode, instrument_tokens):
+    def set_mode(self, mode: str, instrument_tokens: List[int]) -> bool:
         """
         Set streaming mode for the given list of tokens.
 
@@ -635,7 +646,7 @@ class KiteTicker(object):
             self._close(reason="Error while setting mode: {}".format(str(e)))
             raise
 
-    def resubscribe(self):
+    def resubscribe(self) -> None:
         """Resubscribe to all current subscribed tokens."""
         modes = {}
 
@@ -654,26 +665,26 @@ class KiteTicker(object):
             self.subscribe(modes[mode])
             self.set_mode(mode, modes[mode])
 
-    def _on_connect(self, ws, response):
+    def _on_connect(self, ws: Any, response: Any) -> None:
         self.ws = ws
         if self.on_connect:
             self.on_connect(self, response)
 
-    def _on_close(self, ws, code, reason):
+    def _on_close(self, ws: Any, code: int, reason: Any) -> None:
         """Call `on_close` callback when connection is closed."""
         log.error("Connection closed: {} - {}".format(code, str(reason)))
 
         if self.on_close:
             self.on_close(self, code, reason)
 
-    def _on_error(self, ws, code, reason):
+    def _on_error(self, ws: Any, code: int, reason: Any) -> None:
         """Call `on_error` callback when connection throws an error."""
         log.error("Connection error: {} - {}".format(code, str(reason)))
 
         if self.on_error:
             self.on_error(self, code, reason)
 
-    def _on_message(self, ws, payload, is_binary):
+    def _on_message(self, ws: Any, payload: Any, is_binary: bool) -> None:
         """Call `on_message` callback when text message is received."""
         if self.on_message:
             self.on_message(self, payload, is_binary)
@@ -686,7 +697,7 @@ class KiteTicker(object):
         if not is_binary:
             self._parse_text_message(payload)
 
-    def _on_open(self, ws):
+    def _on_open(self, ws: Any) -> None:
         # Resubscribe if its reconnect
         if not self._is_first_connect:
             self.resubscribe()
@@ -697,15 +708,15 @@ class KiteTicker(object):
         if self.on_open:
             return self.on_open(self)
 
-    def _on_reconnect(self, attempts_count):
+    def _on_reconnect(self, attempts_count: int) -> None:
         if self.on_reconnect:
             return self.on_reconnect(self, attempts_count)
 
-    def _on_noreconnect(self):
+    def _on_noreconnect(self) -> None:
         if self.on_noreconnect:
             return self.on_noreconnect(self)
 
-    def _parse_text_message(self, payload):
+    def _parse_text_message(self, payload: Any) -> None:
         """Parse text message."""
         # Decode unicode data
         if not six.PY2 and type(payload) == bytes:
@@ -724,7 +735,7 @@ class KiteTicker(object):
         if data.get("type") == "error":
             self._on_error(self, 0, data.get("data"))
 
-    def _parse_binary(self, bin):
+    def _parse_binary(self, bin: bytes) -> List[Dict[str, Any]]:
         """Parse binary data to a (list of) ticks structure."""
         packets = self._split_packets(bin)  # split data to individual ticks packet
         data = []
@@ -849,11 +860,11 @@ class KiteTicker(object):
 
         return data
 
-    def _unpack_int(self, bin, start, end, byte_format="I"):
+    def _unpack_int(self, bin: bytes, start: int, end: int, byte_format: str = "I") -> int:
         """Unpack binary data as unsgined interger."""
         return struct.unpack(">" + byte_format, bin[start:end])[0]
 
-    def _split_packets(self, bin):
+    def _split_packets(self, bin: bytes) -> List[bytes]:
         """Split the data to individual packets of ticks."""
         # Ignore heartbeat data.
         if len(bin) < 2:

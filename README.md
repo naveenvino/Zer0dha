@@ -26,6 +26,7 @@ Kite Connect is a set of REST-like APIs that expose many capabilities required t
 - **Drop Support for Python 2.7**: Starting from version v5, support for Python 2.7 has been discontinued. This decision was made due to the [announcement](https://github.com/actions/setup-python/issues/672) by `setup-python`, which stopped supporting Python 2.x since May 2023.
 
 - **For Python 2.x Users**: If you are using Python 2.x, you can continue using the `kiteconnect` library, but please stick to the <= 4.x.x versions of the library. You can find the previous releases on the [PyKiteConnect GitHub Releases](https://github.com/zerodha/pykiteconnect/releases) page.
+- **Python typing support requires Python 3.7 or higher** to take advantage of the type hints included in this package.
 
 ## Installing the client
 
