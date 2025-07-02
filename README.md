@@ -75,6 +75,15 @@ Each Python version uses a specific compiler version (e.g. CPython 2.7 uses Visu
 
 For more details check [official Python documentation](https://wiki.python.org/moin/WindowsCompilers).
 
+## Building an algo trading bot
+
+1. **Setup login** – Use `KiteConnect` to obtain an `access_token` after the user logs in.
+2. **Subscribe to WebSocket data** – Connect using `KiteTicker` and subscribe to the required instrument tokens.
+3. **Place orders** – Call `KiteConnect.place_order()` to execute trades programmatically.
+4. **Handle errors** – Catch `KiteException` derivatives to gracefully handle API or network issues.
+
+For reference, see the login and order example from [Issue&nbsp;1](examples/simple.py) and the WebSocket example from [Issue&nbsp;2](examples/ticker.py).
+
 ## API usage
 
 ```python
