@@ -203,6 +203,45 @@ pip install pdoc
 pdoc --html --html-dir docs kiteconnect
 ```
 
+## TradingView integration
+
+`examples/tradingview_webhook.py` demonstrates a tiny Flask server that can
+receive alerts from TradingView and place orders via `KiteConnect`.
+
+TradingView alerts should POST a JSON payload to `/webhook` with the following
+structure:
+
+```json
+{
+  "api_key": "your_api_key",
+  "access_token": "your_access_token",
+  "orders": [
+    {
+      "exchange": "NSE",
+      "tradingsymbol": "SBIN",
+      "transaction_type": "BUY",
+      "quantity": 1,
+      "order_type": "MARKET",
+      "product": "CNC",
+      "variety": "regular"
+    }
+  ]
+}
+```
+
+The values inside each order map directly to the parameters accepted by
+`KiteConnect.place_order`. Multiple orders can be sent in the `orders` list to
+execute multi-leg strategies.
+
+Run the example with:
+
+```sh
+python examples/tradingview_webhook.py
+```
+
+Then configure your TradingView alert to POST the above JSON to the running
+server.
+
 ## Changelog
 
 [Check release notes](https://github.com/zerodha/pykiteconnect/releases)
