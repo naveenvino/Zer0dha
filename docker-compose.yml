@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      # Replace with your actual API Key, Secret, and Access Token
+      KITE_API_KEY: "your_api_key"
+      KITE_API_SECRET: "your_api_secret"
+      KITE_ACCESS_TOKEN: "your_access_token"
+      # Set to '1' for paper trading, '0' for live trading
+      PAPER_TRADING_MODE: "1"
+    # command: flask run --host=0.0.0.0 # Uncomment if you want to override CMD in Dockerfile

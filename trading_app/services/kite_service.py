@@ -4,7 +4,13 @@ from datetime import datetime, timedelta
 import json
 from flask import current_app
 
-from kiteconnect import KiteConnect
+import logging
+import time
+from datetime import datetime, timedelta
+import json
+from flask import current_app
+
+from kiteconnect import KiteConnect, KiteConnectError
 
 from trading_app.db import get_db
 
@@ -64,18 +70,20 @@ def get_kite_instance():
         access_token = config.get("access_token")
 
         if not api_key or not access_token:
-            logging.warning("API Key or Access Token not found in config.")
-            return None
+            error_msg = "KiteConnect initialization failed: API Key or Access Token not found in config."
+            logging.error(error_msg)
+            raise KiteConnectError(error_msg)
 
         try:
             kite = KiteConnect(api_key=api_key)
             kite.set_access_token(access_token)
-            kite.profile()
+            kite.profile() # Test the connection
             logging.info("KiteConnect instance created and authenticated successfully.")
             return kite
         except Exception as e:
-            logging.error(f"Error initializing KiteConnect: {e}")
-            return None
+            error_msg = f"Error initializing KiteConnect: {e}"
+            logging.error(error_msg)
+            raise KiteConnectError(error_msg, original_exception=e)
 
 NFO_INSTRUMENTS = []
 INSTRUMENTS_CACHE_TIME = None

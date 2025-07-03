@@ -113,6 +113,21 @@ from kiteconnect.connect import KiteConnect
 from kiteconnect.ticker import KiteTicker
 from kiteconnect.async_connect import AsyncKiteConnect
 from kiteconnect.async_ticker import AsyncKiteTicker
+from kiteconnect.advanced_orders import place_cover_order, place_bracket_order, place_amo_order, place_iceberg_order
+from kiteconnect.portfolio import get_current_portfolio
+from kiteconnect.backtesting import run_backtest
+from kiteconnect.risk_management import set_stop_loss, set_target_profit
+from kiteconnect.historical_data_utils import get_historical_data_dataframe
+from kiteconnect.technical_indicators import calculate_sma
+from kiteconnect.charting import plot_candlestick_chart
+from kiteconnect.notifications import send_telegram_message
+from kiteconnect.config_manager import save_config, load_config
+from kiteconnect.error_handling import KiteConnectError, OrderPlacementError, DataFetchError, InvalidRequestError
+from kiteconnect.logging_config import setup_logging
+from kiteconnect.predictive_models import train_price_prediction_model, predict_price
+from kiteconnect.realtime_data import RealtimeMarketDataProcessor
+from kiteconnect.trade_journal import init_db, insert_trade, get_all_trades, get_trades_dataframe, analyze_trades
+from kiteconnect.data_cache import save_historical_data, load_historical_data
 
 __all__ = [
     "KiteConnect",
@@ -120,4 +135,38 @@ __all__ = [
     "AsyncKiteConnect",
     "AsyncKiteTicker",
     "exceptions",
+    "place_cover_order",
+    "place_bracket_order",
+    "place_amo_order",
+    "place_iceberg_order",
+    "get_current_portfolio",
+    "run_backtest",
+    "set_stop_loss",
+    "set_target_profit",
+    "get_historical_data_dataframe",
+    "calculate_sma",
+    "calculate_rsi",
+    "calculate_macd",
+    "calculate_bollinger_bands",
+    "calculate_stochastic_oscillator",
+    "calculate_atr",
+    "plot_candlestick_chart",
+    "send_telegram_message",
+    "save_config",
+    "load_config",
+    "KiteConnectError",
+    "OrderPlacementError",
+    "DataFetchError",
+    "InvalidRequestError",
+    "setup_logging",
+    "train_price_prediction_model",
+    "predict_price",
+    "RealtimeMarketDataProcessor",
+    "init_db",
+    "insert_trade",
+    "get_all_trades",
+    "get_trades_dataframe",
+    "analyze_trades",
+    "save_historical_data",
+    "load_historical_data",
 ]

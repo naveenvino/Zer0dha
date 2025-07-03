@@ -21,6 +21,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Union, Tuple
 
 from .__version__ import __version__, __title__
 import kiteconnect.exceptions as ex
+from kiteconnect.utils.network import retry
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +61,8 @@ class KiteConnect(object):
     VARIETY_AMO = "amo"
     VARIETY_ICEBERG = "iceberg"
     VARIETY_AUCTION = "auction"
+    VARIETY_AUCTION = "auction"
+    
 
     # Transaction type
     TRANSACTION_TYPE_BUY = "BUY"
@@ -960,12 +963,14 @@ class KiteConnect(object):
     def _user_agent(self) -> str:
         return (__title__ + "-python/").capitalize() + __version__
 
+    @retry(exceptions=(requests.exceptions.ConnectionError, requests.exceptions.Timeout), tries=3, delay=1, backoff=2)
     def _get(
         self, route: str, url_args: Optional[Dict[str, Any]] = None, params: Optional[Dict[str, Any]] = None, is_json: bool = False
     ) -> Any:
         """Alias for sending a GET request."""
         return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
 
+    @retry(exceptions=(requests.exceptions.ConnectionError, requests.exceptions.Timeout), tries=3, delay=1, backoff=2)
     def _post(
         self,
         route: str,
@@ -977,6 +982,7 @@ class KiteConnect(object):
         """Alias for sending a POST request."""
         return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
 
+    @retry(exceptions=(requests.exceptions.ConnectionError, requests.exceptions.Timeout), tries=3, delay=1, backoff=2)
     def _put(
         self,
         route: str,
@@ -988,6 +994,7 @@ class KiteConnect(object):
         """Alias for sending a PUT request."""
         return self._request(route, "PUT", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
 
+    @retry(exceptions=(requests.exceptions.ConnectionError, requests.exceptions.Timeout), tries=3, delay=1, backoff=2)
     def _delete(
         self, route: str, url_args: Optional[Dict[str, Any]] = None, params: Optional[Dict[str, Any]] = None, is_json: bool = False
     ) -> Any:

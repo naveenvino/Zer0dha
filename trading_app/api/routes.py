@@ -208,3 +208,15 @@ def get_active_trades():
     db = get_db()
     active_trades = db.execute('SELECT * FROM active_trades').fetchall()
     return jsonify([dict(row) for row in active_trades])
+
+@api_bp.route('/portfolio', methods=['GET'])
+def get_portfolio_data():
+    kite = get_kite_instance()
+    if not kite:
+        return jsonify({'status': 'error', 'message': 'KiteConnect initialization failed'}), 500
+    try:
+        portfolio = get_current_portfolio(kite)
+        return jsonify(portfolio)
+    except Exception as e:
+        current_app.logger.error(f"Error fetching portfolio data: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
