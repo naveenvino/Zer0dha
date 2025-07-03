@@ -202,6 +202,7 @@
             });
 
             const strategy = {
+                id: Date.now(), // Simple unique ID
                 name: document.getElementById('strategy-name').value,
                 stop_loss: parseFloat(document.getElementById('stop-loss').value) || null,
                 target_profit: parseFloat(document.getElementById('target-profit').value) || null,
@@ -246,8 +247,35 @@
                 strategies.forEach(s => {
                     const div = document.createElement('div');
                     div.className = 'bg-gray-700 p-3 rounded-lg flex justify-between items-center';
-                    div.innerHTML = `<span class="font-medium text-blue-200">${s.name}</span> <span class="text-sm text-gray-300">${s.legs.length} legs</span>`;
+                    div.setAttribute('data-id', s.id);
+                    div.innerHTML = `
+                        <span class="font-medium text-blue-200">${s.name}</span>
+                        <span class="text-sm text-gray-300">${s.legs.length} legs</span>
+                        <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg delete-strategy-btn">Delete</button>
+                    `;
                     listEl.appendChild(div);
+                });
+
+                document.querySelectorAll('.delete-strategy-btn').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const strategyDiv = e.target.closest('[data-id]');
+                        const strategyId = strategyDiv.getAttribute('data-id');
+                        
+                        try {
+                            const response = await fetch(`${API_BASE_URL}/api/strategies/${strategyId}`, {
+                                method: 'DELETE'
+                            });
+                            const result = await response.json();
+                            if (response.ok) {
+                                showStatus(result.message);
+                                strategyDiv.remove();
+                            } else {
+                                throw new Error(result.message);
+                            }
+                        } catch (error) {
+                            showStatus(`Error deleting strategy: ${error.message}`, true);
+                        }
+                    });
                 });
             } catch (error) {
                 console.error("Could not load strategies:", error);

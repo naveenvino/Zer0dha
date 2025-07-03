@@ -137,16 +137,25 @@ def manage_config():
     else:
         return jsonify(load_json_file(CONFIG_FILE, {}))
 
-@app.route('/api/strategies', methods=['GET', 'POST'])
-def manage_strategies():
-    # This endpoint is now less critical but kept for potential future use.
-    if request.method == 'POST':
-        strategies = load_json_file(STRATEGIES_FILE, [])
-        strategies.append(request.json)
-        write_json_file(STRATEGIES_FILE, strategies)
-        return jsonify({'status': 'success', 'message': 'Strategy saved.'})
-    else:
-        return jsonify(load_json_file(STRATEGIES_FILE, []))
+@app.route('/api/strategies', methods=['GET'])
+def get_strategies():
+    return jsonify(load_json_file(STRATEGIES_FILE, []))
+
+@app.route('/api/strategies', methods=['POST'])
+def add_strategy():
+    strategies = load_json_file(STRATEGIES_FILE, [])
+    new_strategy = request.json
+    new_strategy['id'] = int(time.time() * 1000)
+    strategies.append(new_strategy)
+    write_json_file(STRATEGIES_FILE, strategies)
+    return jsonify({'status': 'success', 'message': 'Strategy saved.'})
+
+@app.route('/api/strategies/<int:strategy_id>', methods=['DELETE'])
+def delete_strategy(strategy_id):
+    strategies = load_json_file(STRATEGIES_FILE, [])
+    strategies = [s for s in strategies if s.get('id') != strategy_id]
+    write_json_file(STRATEGIES_FILE, strategies)
+    return jsonify({'status': 'success', 'message': 'Strategy deleted.'})
 
 def place_order_leg(kite, leg_details):
     """Places a single order and returns the response."""
