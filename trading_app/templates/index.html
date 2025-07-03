@@ -3,334 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algo Trading Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Zerodha Trading App</title>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2 { color: #0056b3; }
+        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="password"], input[type="number"], textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
-        .leg-template .grid {
-            align-items: end;
+        input[type="checkbox"] { margin-right: 10px; }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
         }
+        button:hover { background-color: #0056b3; }
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .message.success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .message.error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .trade-item {
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        .trade-item strong { color: #007bff; }
+        pre { background-color: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
     </style>
 </head>
-<body class="bg-gray-900 text-white">
+<body>
+    <div class="container">
+        <h1>Zerodha Trading App Dashboard</h1>
 
-    <div class="container mx-auto p-4 md:p-8">
-        <h1 class="text-4xl font-bold mb-8 text-center text-blue-400">Algo Trading Platform</h1>
+        <div class="section">
+            <h2>API Configuration</h2>
+            <form id="configForm">
+                <label for="apiKey">API Key:</label>
+                <input type="text" id="apiKey" name="api_key" required>
 
-        <!-- Status Message -->
-        <div id="status-message" class="hidden p-4 mb-4 text-sm rounded-lg" role="alert"></div>
+                <label for="apiSecret">API Secret:</label>
+                <input type="password" id="apiSecret" name="api_secret" required>
 
-        <!-- API Configuration -->
-        <div class="bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
-            <h2 class="text-2xl font-semibold mb-4 text-blue-300">API Configuration</h2>
-            <form id="api-config-form">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="api-key" class="block mb-2 text-sm font-medium text-gray-300">API Key</label>
-                        <input type="password" id="api-key" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
-                    </div>
-                    <div>
-                        <label for="api-secret" class="block mb-2 text-sm font-medium text-gray-300">API Secret</label>
-                        <input type="password" id="api-secret" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
-                    </div>
-                    <div>
-                        <label for="access-token" class="block mb-2 text-sm font-medium text-gray-300">Access Token</label>
-                        <input type="text" id="access-token" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-lg w-full">Save Configuration</button>
-                    </div>
-                </div>
+                <label for="accessToken">Access Token:</label>
+                <input type="text" id="accessToken" name="access_token" placeholder="Leave empty to generate">
+
+                <label for="hedgeOffset">Hedge Offset (points):</label>
+                <input type="number" id="hedgeOffset" name="hedge_offset" value="200">
+
+                <label>
+                    <input type="checkbox" id="paperTradingMode" name="paper_trading_mode">
+                    Paper Trading Mode
+                </label>
+                <br><br>
+                <button type="submit">Save Configuration</button>
             </form>
+            <div id="configMessage" class="message"></div>
         </div>
-        
-        <!-- Saved Strategies Display -->
-        <div class="bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
-            <h2 class="text-2xl font-semibold mb-4 text-blue-300">Saved Strategies</h2>
-            <div id="saved-strategies-list" class="space-y-2">
+
+        <div class="section">
+            <h2>Trading Strategies</h2>
+            <form id="strategyForm">
+                <h3>Add New Strategy</h3>
+                <label for="strategyName">Strategy Name:</label>
+                <input type="text" id="strategyName" name="name" required>
+
+                <label for="stopLoss">Stop Loss (points):</label>
+                <input type="number" id="stopLoss" name="stop_loss" step="0.01">
+
+                <label for="targetProfit">Target Profit (points):</label>
+                <input type="number" id="targetProfit" name="target_profit" step="0.01">
+
+                <label for="strategyLegs">Strategy Legs (JSON Array):</label>
+                <textarea id="strategyLegs" name="legs" rows="5" placeholder='[{"tradingsymbol": "NIFTY24AUG17450CE", "exchange": "NFO", "transaction_type": "SELL", "quantity": 50}]' required></textarea>
+                <br><br>
+                <button type="submit">Add Strategy</button>
+            </form>
+            <div id="strategyMessage" class="message"></div>
+
+            <h3>Existing Strategies</h3>
+            <ul id="strategiesList">
                 <!-- Strategies will be loaded here -->
-                <p class="text-gray-400">No strategies saved yet.</p>
-            </div>
+            </ul>
         </div>
 
-        <!-- Strategy Builder -->
-        <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
-            <h2 class="text-2xl font-semibold mb-4 text-blue-300">Strategy Builder</h2>
-            <form id="strategy-form">
-                <div class="mb-6">
-                    <label for="strategy-name" class="block mb-2 text-sm font-medium text-gray-300">Strategy Name</label>
-                    <input type="text" id="strategy-name" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="e.g., Nifty Weekly Iron Condor" required>
-                </div>
-
-                <div id="legs-container">
-                    <!-- Leg 1 -->
-                    <div class="bg-gray-700 p-4 rounded-lg mb-4 leg-template">
-                        <div class="flex justify-between items-center mb-3">
-                             <h3 class="text-lg font-semibold text-blue-200">Leg 1</h3>
-                             <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg remove-leg-btn">Remove</button>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-300">Type</label>
-                                <select class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5 leg-type" required>
-                                    <option>CE</option>
-                                    <option>PE</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-300">Action</label>
-                                <select class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5 leg-action" required>
-                                    <option>SELL</option>
-                                    <option>BUY</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-300">Strike Offset</label>
-                                <input type="number" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5 leg-strike" placeholder="e.g., 100" required>
-                                <p class="text-xs text-gray-400 mt-1">Offset from ATM</p>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-300">Quantity</label>
-                                <input type="number" class="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5 leg-quantity" placeholder="e.g., 50" required>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="button" id="add-leg-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mb-6">Add Leg</button>
-
-                <!-- Exit Conditions -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-3 text-blue-200">Exit Conditions</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-300">Stop Loss (%)</label>
-                            <input type="number" id="stop-loss" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 20">
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-300">Target Profit (%)</label>
-                            <input type="number" id="target-profit" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5" placeholder="e.g., 40">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-8 text-center">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg">Create Strategy</button>
-                </div>
-            </form>
-        </div>
-
-         <!-- Webhook URL -->
-        <div class="bg-gray-800 rounded-lg p-6 mt-8 shadow-lg">
-            <h2 class="text-2xl font-semibold mb-4 text-blue-300">TradingView Webhook URL</h2>
-             <p class="text-gray-400 mb-2">Use this URL in your TradingView alert's "Webhook URL" field. The body should be a JSON object like: <code class="bg-gray-700 p-1 rounded">{"strategy_name": "Your Strategy Name"}</code></p>
-            <div class="flex items-center bg-gray-700 rounded-lg p-2">
-                <input type="text" id="webhook-url" class="bg-gray-700 text-white text-sm block w-full p-2.5" value="" readonly>
-                <button type="button" onclick="copyWebhook()" class="ml-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Copy</button>
+        <div class="section">
+            <h2>Active Trades</h2>
+            <div id="activeTradesList">
+                <!-- Active trades will be loaded here -->
+                <p>No active trades.</p>
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE_URL = window.location.origin;
-
-        // --- Helper Functions ---
-        function showStatus(message, isError = false) {
-            const statusDiv = document.getElementById('status-message');
-            statusDiv.textContent = message;
-            statusDiv.className = `p-4 mb-4 text-sm rounded-lg ${isError ? 'bg-red-900 text-red-300' : 'bg-green-900 text-green-300'}`;
-            statusDiv.classList.remove('hidden');
-            setTimeout(() => statusDiv.classList.add('hidden'), 5000);
-        }
-
-        // --- API Configuration ---
-        const apiForm = document.getElementById('api-config-form');
-        apiForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const config = {
-                api_key: document.getElementById('api-key').value,
-                api_secret: document.getElementById('api-secret').value,
-                access_token: document.getElementById('access-token').value
-            };
-            
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/config`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(config)
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    showStatus(result.message);
-                } else {
-                    throw new Error(result.message);
-                }
-            } catch (error) {
-                showStatus(`Error saving config: ${error.message}`, true);
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            loadStrategies();
+            loadActiveTrades();
         });
+
+        // --- Configuration Form ---
+        const configForm = document.getElementById('configForm');
+        const configMessage = document.getElementById('configMessage');
 
         async function loadConfig() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/config`);
-                if (!response.ok) return;
+                const response = await fetch('/api/config');
                 const config = await response.json();
-                document.getElementById('api-key').value = config.api_key || '';
-                document.getElementById('api-secret').value = config.api_secret || '';
-                document.getElementById('access-token').value = config.access_token || '';
+                if (Object.keys(config).length > 0) {
+                    document.getElementById('apiKey').value = config.api_key || '';
+                    document.getElementById('apiSecret').value = config.api_secret || '';
+                    document.getElementById('accessToken').value = config.access_token || '';
+                    document.getElementById('hedgeOffset').value = config.hedge_offset || 200;
+                    document.getElementById('paperTradingMode').checked = config.paper_trading_mode;
+                }
             } catch (error) {
-                // Fail silently if config can't be loaded
-                console.error("Could not load API config:", error);
+                console.error('Error loading config:', error);
+                configMessage.textContent = 'Error loading configuration.';
+                configMessage.className = 'message error';
             }
         }
 
-        // --- Strategy Management ---
-        const strategyForm = document.getElementById('strategy-form');
-        strategyForm.addEventListener('submit', async (e) => {
+        configForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const legs = [];
-            document.querySelectorAll('.leg-template').forEach(legEl => {
-                legs.push({
-                    type: legEl.querySelector('.leg-type').value,
-                    action: legEl.querySelector('.leg-action').value,
-                    strike_offset: parseInt(legEl.querySelector('.leg-strike').value),
-                    quantity: parseInt(legEl.querySelector('.leg-quantity').value)
-                });
-            });
-
-            const strategy = {
-                id: Date.now(), // Simple unique ID
-                name: document.getElementById('strategy-name').value,
-                stop_loss: parseFloat(document.getElementById('stop-loss').value) || null,
-                target_profit: parseFloat(document.getElementById('target-profit').value) || null,
-                legs: legs
-            };
+            const formData = new FormData(configForm);
+            const data = Object.fromEntries(formData.entries());
+            data.paper_trading_mode = document.getElementById('paperTradingMode').checked;
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/strategies`, {
+                const response = await fetch('/api/config', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(strategy)
+                    body: JSON.stringify(data)
                 });
                 const result = await response.json();
-                if (response.ok) {
-                    showStatus(result.message);
-                    strategyForm.reset();
-                    while(document.querySelectorAll('.leg-template').length > 1) {
-                        document.querySelector('.leg-template:last-child').remove();
-                    }
-                    loadStrategies(); // Refresh the list
+                if (result.status === 'success') {
+                    configMessage.textContent = result.message;
+                    configMessage.className = 'message success';
                 } else {
-                    throw new Error(result.message);
+                    configMessage.textContent = result.message || 'Failed to save configuration.';
+                    configMessage.className = 'message error';
                 }
             } catch (error) {
-                showStatus(`Error saving strategy: ${error.message}`, true);
+                console.error('Error saving config:', error);
+                configMessage.textContent = 'Error saving configuration.';
+                configMessage.className = 'message error';
             }
         });
+
+        // --- Strategy Form ---
+        const strategyForm = document.getElementById('strategyForm');
+        const strategyMessage = document.getElementById('strategyMessage');
+        const strategiesList = document.getElementById('strategiesList');
 
         async function loadStrategies() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/strategies`);
-                if (!response.ok) return;
+                const response = await fetch('/api/strategies');
                 const strategies = await response.json();
-                const listEl = document.getElementById('saved-strategies-list');
-                listEl.innerHTML = ''; // Clear existing list
-
+                strategiesList.innerHTML = ''; // Clear existing list
                 if (strategies.length === 0) {
-                    listEl.innerHTML = '<p class="text-gray-400">No strategies saved yet.</p>';
+                    strategiesList.innerHTML = '<p>No strategies defined yet.</p>';
                     return;
                 }
-
-                strategies.forEach(s => {
-                    const div = document.createElement('div');
-                    div.className = 'bg-gray-700 p-3 rounded-lg flex justify-between items-center';
-                    div.setAttribute('data-id', s.id);
-                    div.innerHTML = `
-                        <span class="font-medium text-blue-200">${s.name}</span>
-                        <span class="text-sm text-gray-300">${s.legs.length} legs</span>
-                        <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg delete-strategy-btn">Delete</button>
+                strategies.forEach(strategy => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <strong>${strategy.name}</strong> (SL: ${strategy.stop_loss || 'N/A'}, TP: ${strategy.target_profit || 'N/A'})
+                        <pre>${JSON.stringify(JSON.parse(strategy.legs), null, 2)}</pre>
+                        <button onclick="deleteStrategy(${strategy.id})">Delete</button>
                     `;
-                    listEl.appendChild(div);
-                });
-
-                document.querySelectorAll('.delete-strategy-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
-                        const strategyDiv = e.target.closest('[data-id]');
-                        const strategyId = strategyDiv.getAttribute('data-id');
-                        
-                        try {
-                            const response = await fetch(`${API_BASE_URL}/api/strategies/${strategyId}`, {
-                                method: 'DELETE'
-                            });
-                            const result = await response.json();
-                            if (response.ok) {
-                                showStatus(result.message);
-                                strategyDiv.remove();
-                            } else {
-                                throw new Error(result.message);
-                            }
-                        } catch (error) {
-                            showStatus(`Error deleting strategy: ${error.message}`, true);
-                        }
-                    });
+                    strategiesList.appendChild(li);
                 });
             } catch (error) {
-                console.error("Could not load strategies:", error);
-                const listEl = document.getElementById('saved-strategies-list');
-                listEl.innerHTML = '<p class="text-red-400">Could not load strategies.</p>';
+                console.error('Error loading strategies:', error);
+                strategyMessage.textContent = 'Error loading strategies.';
+                strategyMessage.className = 'message error';
             }
         }
 
+        strategyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(strategyForm);
+            const data = Object.fromEntries(formData.entries());
+            try {
+                data.legs = JSON.parse(data.legs); // Parse legs JSON string to object
+            } catch (error) {
+                strategyMessage.textContent = 'Invalid JSON for Strategy Legs.';
+                strategyMessage.className = 'message error';
+                return;
+            }
 
-        // --- Dynamic Leg Management ---
-        document.getElementById('add-leg-btn').addEventListener('click', function() {
-            const container = document.getElementById('legs-container');
-            const legCount = container.children.length;
-            const newLeg = container.children[0].cloneNode(true);
-            newLeg.querySelector('h3').textContent = `Leg ${legCount + 1}`;
-            newLeg.querySelectorAll('input, select').forEach(input => input.value = '');
-            container.appendChild(newLeg);
-            updateRemoveButtons();
+            try {
+                const response = await fetch('/api/strategies', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    strategyMessage.textContent = result.message;
+                    strategyMessage.className = 'message success';
+                    strategyForm.reset();
+                    loadStrategies(); // Reload strategies after adding
+                } else {
+                    strategyMessage.textContent = result.message || 'Failed to add strategy.';
+                    strategyMessage.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Error adding strategy:', error);
+                strategyMessage.textContent = 'Error adding strategy.';
+                strategyMessage.className = 'message error';
+            }
         });
 
-        function updateRemoveButtons() {
-            document.querySelectorAll('.remove-leg-btn').forEach(button => {
-                button.onclick = function() {
-                    if (document.querySelectorAll('.leg-template').length > 1) {
-                        this.closest('.leg-template').remove();
-                        document.querySelectorAll('.leg-template').forEach((leg, index) => {
-                            leg.querySelector('h3').textContent = `Leg ${index + 1}`;
-                        });
-                    } else {
-                        showStatus("A strategy must have at least one leg.", true);
-                    }
-                };
-            });
+        async function deleteStrategy(id) {
+            if (!confirm('Are you sure you want to delete this strategy?')) {
+                return;
+            }
+            try {
+                const response = await fetch(`/api/strategies/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    strategyMessage.textContent = result.message;
+                    strategyMessage.className = 'message success';
+                    loadStrategies(); // Reload strategies after deleting
+                } else {
+                    strategyMessage.textContent = result.message || 'Failed to delete strategy.';
+                    strategyMessage.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Error deleting strategy:', error);
+                strategyMessage.textContent = 'Error deleting strategy.';
+                strategyMessage.className = 'message error';
+            }
         }
 
-        // --- Webhook URL ---
-        function copyWebhook() {
-            const webhookUrl = document.getElementById('webhook-url');
-            webhookUrl.select();
-            document.execCommand('copy');
-            showStatus('Webhook URL copied to clipboard!');
-        }
-        
-        function setWebhookUrl() {
-             document.getElementById('webhook-url').value = `${API_BASE_URL}/webhook`;
-        }
+        // --- Active Trades ---
+        const activeTradesList = document.getElementById('activeTradesList');
 
-        // --- Initial Load ---
-        window.onload = () => {
-            loadConfig();
-            loadStrategies();
-            updateRemoveButtons();
-            setWebhookUrl();
-        };
+        async function loadActiveTrades() {
+            try {
+                const response = await fetch('/api/active_trades');
+                const activeTrades = await response.json();
+                activeTradesList.innerHTML = ''; // Clear existing list
+                if (activeTrades.length === 0) {
+                    activeTradesList.innerHTML = '<p>No active trades.</p>';
+                    return;
+                }
+                activeTrades.forEach(trade => {
+                    const div = document.createElement('div');
+                    div.className = 'trade-item';
+                    div.innerHTML = `
+                        <strong>Trade ID:</strong> ${trade.id}<br>
+                        <strong>Strategy ID:</strong> ${trade.strategy_id || 'N/A'}<br>
+                        <strong>Strike Price:</strong> ${trade.strike_price}<br>
+                        <strong>Entry Time:</strong> ${new Date(trade.entry_time).toLocaleString()}<br>
+                        <strong>Legs:</strong> <pre>${JSON.stringify(JSON.parse(trade.legs), null, 2)}</pre>
+                    `;
+                    activeTradesList.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error loading active trades:', error);
+                activeTradesList.innerHTML = '<p class="message error">Error loading active trades.</p>';
+            }
+        }
     </script>
-
 </body>
 </html>
