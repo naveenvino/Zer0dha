@@ -49,71 +49,135 @@
 </head>
 <body>
     <div class="container">
-        <h1>Zerodha Trading App Dashboard</h1>
+        <div id="authSection">
+            <div id="loggedInStatus" style="display: none;">
+                <p>Welcome, <span id="usernameDisplay"></span>!</p>
+                <button id="logoutButton">Logout</button>
+            </div>
+            <div id="loggedOutForms">
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <label for="registerUsername">Username:</label>
+                    <input type="text" id="registerUsername" name="username" required>
+                    <label for="registerPassword">Password:</label>
+                    <input type="password" id="registerPassword" name="password" required>
+                    <button type="submit">Register</button>
+                </form>
+                <div id="registerMessage" class="message"></div>
 
-        <div class="section">
-            <h2>API Configuration</h2>
-            <form id="configForm">
-                <label for="apiKey">API Key:</label>
-                <input type="text" id="apiKey" name="api_key" required>
-
-                <label for="apiSecret">API Secret:</label>
-                <input type="password" id="apiSecret" name="api_secret" required>
-
-                <label for="accessToken">Access Token:</label>
-                <input type="text" id="accessToken" name="access_token" placeholder="Leave empty to generate">
-
-                <label for="hedgeOffset">Hedge Offset (points):</label>
-                <input type="number" id="hedgeOffset" name="hedge_offset" value="200">
-
-                <label>
-                    <input type="checkbox" id="paperTradingMode" name="paper_trading_mode">
-                    Paper Trading Mode
-                </label>
-                <br><br>
-                <button type="submit">Save Configuration</button>
-            </form>
-            <div id="configMessage" class="message"></div>
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <label for="loginUsername">Username:</label>
+                    <input type="text" id="loginUsername" name="username" required>
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <div id="loginMessage" class="message"></div>
+            </div>
         </div>
 
-        <div class="section">
-            <h2>Trading Strategies</h2>
-            <form id="strategyForm">
-                <h3>Add New Strategy</h3>
-                <label for="strategyName">Strategy Name:</label>
-                <input type="text" id="strategyName" name="name" required>
+        <div id="dashboardContent" style="display: none;">
+            <h1>Zerodha Trading App Dashboard</h1>
 
-                <label for="stopLoss">Stop Loss (points):</label>
-                <input type="number" id="stopLoss" name="stop_loss" step="0.01">
+            <div class="section">
+                <h2>API Configuration</h2>
+                <form id="configForm">
+                    <label for="apiKey">API Key:</label>
+                    <input type="text" id="apiKey" name="api_key" required>
 
-                <label for="targetProfit">Target Profit (points):</label>
-                <input type="number" id="targetProfit" name="target_profit" step="0.01">
+                    <label for="apiSecret">API Secret:</label>
+                    <input type="password" id="apiSecret" name="api_secret" required>
 
-                <label for="strategyLegs">Strategy Legs (JSON Array):</label>
+                    <label for="accessToken">Access Token:</label>
+                    <input type="text" id="accessToken" name="access_token" placeholder="Leave empty to generate">
+
+                    <label for="hedgeOffset">Hedge Offset (points):</label>
+                    <input type="number" id="hedgeOffset" name="hedge_offset" value="200">
+
+                    <label>
+                        <input type="checkbox" id="paperTradingMode" name="paper_trading_mode">
+                        Paper Trading Mode
+                    </label>
+                    <br><br>
+                    <button type="submit">Save Configuration</button>
+                </form>
+                <div id="configMessage" class="message"></div>
+            </div>
+
+            <div class="section">
+                <h2>Trading Strategies</h2>
+                <form id="strategyForm">
+                    <h3>Add New Strategy</h3>
+                    <input type="hidden" id="strategyId" name="id">
+                    <label for="strategyName">Strategy Name:</label>
+                    <input type="text" id="strategyName" name="name" required>
+
+                    <label for="stopLoss">Stop Loss (points):</label>
+                    <input type="number" id="stopLoss" name="stop_loss" step="0.01">
+
+                    <label for="targetProfit">Target Profit (points):</label>
+                    <input type="number" id="targetProfit" name="target_profit" step="0.01">
+
+                    <label for="strategyLegs">Strategy Legs (JSON Array):</label>
                 <textarea id="strategyLegs" name="legs" rows="5" placeholder='[{"tradingsymbol": "NIFTY24AUG17450CE", "exchange": "NFO", "transaction_type": "SELL", "quantity": 50}]' required></textarea>
+
+                <label for="strategyParameters">Strategy Parameters (JSON):</label>
+                <textarea id="strategyParameters" name="parameters" rows="3" placeholder='{"indicator_period": 14, "risk_per_trade": 0.01}'></textarea>
                 <br><br>
-                <button type="submit">Add Strategy</button>
-            </form>
-            <div id="strategyMessage" class="message"></div>
+                <button type="submit" id="submitStrategyBtn">Add Strategy</button>
+                    <button type="button" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
+                </form>
+                <div id="strategyMessage" class="message"></div>
 
-            <h3>Existing Strategies</h3>
-            <ul id="strategiesList">
-                <!-- Strategies will be loaded here -->
-            </ul>
-        </div>
+                <h3>Existing Strategies</h3>
+                <ul id="strategiesList">
+                    <!-- Strategies will be loaded here -->
+                </ul>
+            </div>
 
-        <div class="section">
-            <h2>Active Trades</h2>
-            <div id="activeTradesList">
-                <!-- Active trades will be loaded here -->
-                <p>No active trades.</p>
+            <div class="section">
+                <h2>Live Market Data</h2>
+                <div id="liveMarketData">
+                    <p>Connecting to live data feed...</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Active Trades</h2>
+                <div id="activeTradesList">
+                    <!-- Active trades will be loaded here -->
+                    <p>No active trades.</p>
+                </div>
+            </div>
+
+            <div class="section">
+            <h2>Current Portfolio</h2>
+            <div id="portfolioData">
+                <p>Loading portfolio data...</p>
             </div>
         </div>
 
         <div class="section">
-            <h2>Current Portfolio</h2>
-            <div id="portfolioData">
-                <p>Loading portfolio data...</p>
+            <h2>Open Orders</h2>
+            <div id="openOrdersList">
+                <p>Loading open orders...</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Order History</h2>
+            <div id="orderHistoryList">
+                <p>Loading order history...</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Market News</h2>
+            <input type="text" id="newsSearchQuery" placeholder="Search news (e.g., NIFTY, Reliance)">
+            <button id="searchNewsButton">Search News</button>
+            <div id="newsArticles">
+                <p>Loading latest market news...</p>
             </div>
         </div>
     </div>
@@ -124,6 +188,8 @@
             loadStrategies();
             loadActiveTrades();
             loadPortfolioData();
+            loadOpenOrders();
+            loadOrderHistory();
         });
 
         // --- Configuration Form ---
@@ -194,6 +260,7 @@
                     li.innerHTML = `
                         <strong>${strategy.name}</strong> (SL: ${strategy.stop_loss || 'N/A'}, TP: ${strategy.target_profit || 'N/A'})
                         <pre>${JSON.stringify(JSON.parse(strategy.legs), null, 2)}</pre>
+                        <button onclick="editStrategy(${strategy.id}, '${strategy.name}', ${strategy.stop_loss}, ${strategy.target_profit}, ${JSON.stringify(JSON.parse(strategy.legs))})">Edit</button>
                         <button onclick="deleteStrategy(${strategy.id})">Delete</button>
                     `;
                     strategiesList.appendChild(li);
@@ -263,6 +330,71 @@
                 strategyMessage.className = 'message error';
             }
         }
+
+        function editStrategy(id, name, stop_loss, target_profit, legs) {
+            document.getElementById('strategyId').value = id;
+            document.getElementById('strategyName').value = name;
+            document.getElementById('stopLoss').value = stop_loss;
+            document.getElementById('targetProfit').value = target_profit;
+            document.getElementById('strategyLegs').value = JSON.stringify(legs, null, 2);
+
+            document.getElementById('submitStrategyBtn').textContent = 'Update Strategy';
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+        }
+
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            document.getElementById('strategyForm').reset();
+            document.getElementById('strategyId').value = '';
+            document.getElementById('submitStrategyBtn').textContent = 'Add Strategy';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        });
+
+        strategyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(strategyForm);
+            const data = Object.fromEntries(formData.entries());
+            const strategyId = document.getElementById('strategyId').value;
+
+            try {
+                data.legs = JSON.parse(data.legs); // Parse legs JSON string to object
+            } catch (error) {
+                strategyMessage.textContent = 'Invalid JSON for Strategy Legs.';
+                strategyMessage.className = 'message error';
+                return;
+            }
+
+            let method = 'POST';
+            let url = '/api/strategies';
+            if (strategyId) {
+                method = 'PUT';
+                url = `/api/strategies/${strategyId}`;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    strategyMessage.textContent = result.message;
+                    strategyMessage.className = 'message success';
+                    document.getElementById('strategyForm').reset();
+                    document.getElementById('strategyId').value = '';
+                    document.getElementById('submitStrategyBtn').textContent = 'Add Strategy';
+                    document.getElementById('cancelEditBtn').style.display = 'none';
+                    loadStrategies(); // Reload strategies after adding/updating
+                } else {
+                    strategyMessage.textContent = result.message || 'Failed to save strategy.';
+                    strategyMessage.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Error saving strategy:', error);
+                strategyMessage.textContent = 'Error saving strategy.';
+                strategyMessage.className = 'message error';
+            }
+        });
 
         // --- Active Trades ---
         const activeTradesList = document.getElementById('activeTradesList');
@@ -355,6 +487,452 @@
             } catch (error) {
                 console.error('Error loading portfolio data:', error);
                 portfolioDataElement.innerHTML = '<p class="message error">Error loading portfolio data.</p>';
+            }
+        }
+    
+
+        // --- Configuration Form ---
+        const configForm = document.getElementById('configForm');
+        const configMessage = document.getElementById('configMessage');
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                if (Object.keys(config).length > 0) {
+                    document.getElementById('apiKey').value = config.api_key || '';
+                    document.getElementById('apiSecret').value = config.api_secret || '';
+                    document.getElementById('accessToken').value = config.access_token || '';
+                    document.getElementById('hedgeOffset').value = config.hedge_offset || 200;
+                    document.getElementById('paperTradingMode').checked = config.paper_trading_mode;
+                }
+            } catch (error) {
+                console.error('Error loading config:', error);
+                configMessage.textContent = 'Error loading configuration.';
+                configMessage.className = 'message error';
+            }
+        }
+
+        configForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(configForm);
+            const data = Object.fromEntries(formData.entries());
+            data.paper_trading_mode = document.getElementById('paperTradingMode').checked;
+
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    configMessage.textContent = result.message;
+                    configMessage.className = 'message success';
+                } else {
+                    configMessage.textContent = result.message || 'Failed to save configuration.';
+                    configMessage.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Error saving config:', error);
+                configMessage.textContent = 'Error saving configuration.';
+                configMessage.className = 'message error';
+            }
+        });
+
+        // --- Strategy Form ---
+        const strategyForm = document.getElementById('strategyForm');
+        const strategyMessage = document.getElementById('strategyMessage');
+        const strategiesList = document.getElementById('strategiesList');
+
+        async function loadStrategies() {
+            try {
+                const response = await fetch('/api/strategies');
+                const strategies = await response.json();
+                strategiesList.innerHTML = ''; // Clear existing list
+                if (strategies.length === 0) {
+                    strategiesList.innerHTML = '<p>No strategies defined yet.</p>';
+                    return;
+                }
+                strategies.forEach(strategy => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <strong>${strategy.name}</strong> (SL: ${strategy.stop_loss || 'N/A'}, TP: ${strategy.target_profit || 'N/A'})
+                        <pre>${JSON.stringify(JSON.parse(strategy.legs), null, 2)}</pre>
+                        <button onclick="editStrategy(${strategy.id}, '${strategy.name}', ${strategy.stop_loss}, ${strategy.target_profit}, ${JSON.stringify(JSON.parse(strategy.legs))})">Edit</button>
+                        <button onclick="deleteStrategy(${strategy.id})">Delete</button>
+                    `;
+                    strategiesList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading strategies:', error);
+                strategyMessage.textContent = 'Error loading strategies.';
+                strategyMessage.className = 'message error';
+            }
+        }
+
+        async function deleteStrategy(id) {
+            if (!confirm('Are you sure you want to delete this strategy?')) {
+                return;
+            }
+            try {
+                const response = await fetch(`/api/strategies/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    strategyMessage.textContent = result.message;
+                    strategyMessage.className = 'message success';
+                    loadStrategies(); // Reload strategies after deleting
+                } else {
+                    strategyMessage.textContent = result.message || 'Failed to delete strategy.';
+                    strategyMessage.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Error deleting strategy:', error);
+                strategyMessage.textContent = 'Error deleting strategy.';
+                strategyMessage.className = 'message error';
+            }
+        }
+
+        function editStrategy(id, name, stop_loss, target_profit, legs) {
+            document.getElementById('strategyId').value = id;
+            document.getElementById('strategyName').value = name;
+            document.getElementById('stopLoss').value = stop_loss;
+            document.getElementById('targetProfit').value = target_profit;
+            document.getElementById('strategyLegs').value = JSON.stringify(legs, null, 2);
+
+            document.getElementById('submitStrategyBtn').textContent = 'Update Strategy';
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+        }
+
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            document.getElementById('strategyForm').reset();
+            document.getElementById('strategyId').value = '';
+            document.getElementById('submitStrategyBtn').textContent = 'Add Strategy';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        });
+
+        strategyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(strategyForm);
+            const data = Object.fromEntries(formData.entries());
+            const strategyId = document.getElementById('strategyId').value;
+
+            try {
+                data.legs = JSON.parse(data.legs); // Parse legs JSON string to object
+            } catch (error) {
+                strategyMessage.textContent = 'Invalid JSON for Strategy Legs.';
+                strategyMessage.className = 'message error';
+                return;
+            }
+
+            let method = 'POST';
+            let url = '/api/strategies';
+            if (strategyId) {
+                method = 'PUT';
+                url = `/api/strategies/${strategyId}`;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    strategyMessage.textContent = result.message;
+                    strategyMessage.className = 'message success';
+                    document.getElementById('strategyForm').reset();
+                    document.getElementById('strategyId').value = '';
+                    document.getElementById('submitStrategyBtn').textContent = 'Add Strategy';
+                    document.getElementById('cancelEditBtn').style.display = 'none';
+                    loadStrategies(); // Reload strategies after adding/updating
+                } else {
+                    strategyMessage.textContent = result.message || 'Failed to save strategy.';
+                    strategyMessage.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Error saving strategy:', error);
+                strategyMessage.textContent = 'Error saving strategy.';
+                strategyMessage.className = 'message error';
+            }
+        });
+
+        // --- Active Trades ---
+        const activeTradesList = document.getElementById('activeTradesList');
+
+        async function loadActiveTrades() {
+            try {
+                const response = await fetch('/api/active_trades');
+                const activeTrades = await response.json();
+                activeTradesList.innerHTML = ''; // Clear existing list
+                if (activeTrades.length === 0) {
+                    activeTradesList.innerHTML = '<p>No active trades.</p>';
+                    return;
+                }
+                activeTrades.forEach(trade => {
+                    const div = document.createElement('div');
+                    div.className = 'trade-item';
+                    div.innerHTML = `
+                        <strong>Trade ID:</strong> ${trade.id}<br>
+                        <strong>Strategy ID:</strong> ${trade.strategy_id || 'N/A'}<br>
+                        <strong>Strategy Name:</strong> ${trade.strategy_name || 'N/A'}<br>
+                        <strong>Strike Price:</strong> ${trade.strike_price || 'N/A'}<br>
+                        <strong>Entry Time:</strong> ${new Date(trade.entry_time).toLocaleString()}<br>
+                        <strong>Legs:</strong> <pre>${JSON.stringify(JSON.parse(trade.legs), null, 2)}</pre>
+                    `;
+                    activeTradesList.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error loading active trades:', error);
+                activeTradesList.innerHTML = '<p class="message error">Error loading active trades.</p>';
+            }
+        }
+
+        // --- Portfolio Data ---
+        const portfolioDataElement = document.getElementById('portfolioData');
+
+        async function loadPortfolioData() {
+            try {
+                const response = await fetch('/api/portfolio');
+                const portfolio = await response.json();
+                portfolioDataElement.innerHTML = ''; // Clear loading message
+
+                if (portfolio.status === 'error') {
+                    portfolioDataElement.innerHTML = `<p class="message error">Error: ${portfolio.message}</p>`;
+                    return;
+                }
+
+                // Display Positions
+                if (portfolio.positions && portfolio.positions.length > 0) {
+                    let positionsHtml = '<h3>Positions</h3>';
+                    positionsHtml += '<table><thead><tr><th>Symbol</th><th>Qty</th><th>Avg Price</th><th>LTP</th><th>Current Value</th><th>P&L</th></tr></thead><tbody>';
+                    portfolio.positions.forEach(pos => {
+                        positionsHtml += `
+                            <tr>
+                                <td>${pos.tradingsymbol}</td>
+                                <td>${pos.quantity}</td>
+                                <td>${pos.average_price ? pos.average_price.toFixed(2) : 'N/A'}</td>
+                                <td>${pos.last_price ? pos.last_price.toFixed(2) : 'N/A'}</td>
+                                <td>${pos.current_value ? pos.current_value.toFixed(2) : 'N/A'}</td>
+                                <td>${pos.pnl ? pos.pnl.toFixed(2) : 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    positionsHtml += '</tbody></table>';
+                    portfolioDataElement.innerHTML += positionsHtml;
+                } else {
+                    portfolioDataElement.innerHTML += '<p>No open positions.</p>';
+                }
+
+                // Display Holdings
+                if (portfolio.holdings && portfolio.holdings.length > 0) {
+                    let holdingsHtml = '<h3>Holdings</h3>';
+                    holdingsHtml += '<table><thead><tr><th>Symbol</th><th>Qty</th><th>Avg Price</th><th>LTP</th><th>Current Value</th><th>P&L</th></tr></thead><tbody>';
+                    portfolio.holdings.forEach(hld => {
+                        holdingsHtml += `
+                            <tr>
+                                <td>${hld.tradingsymbol}</td>
+                                <td>${hld.quantity}</td>
+                                <td>${hld.average_price ? hld.average_price.toFixed(2) : 'N/A'}</td>
+                                <td>${hld.last_price ? hld.last_price.toFixed(2) : 'N/A'}</td>
+                                <td>${hld.current_value ? hld.current_value.toFixed(2) : 'N/A'}</td>
+                                <td>${hld.pnl ? hld.pnl.toFixed(2) : 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    holdingsHtml += '</tbody></table>';
+                    portfolioDataElement.innerHTML += holdingsHtml;
+                } else {
+                    portfolioDataElement.innerHTML += '<p>No holdings.</p>';
+                }
+
+            } catch (error) {
+                console.error('Error loading portfolio data:', error);
+                portfolioDataElement.innerHTML = '<p class="message error">Error loading portfolio data.</p>';
+            }
+        }
+
+        // --- WebSocket for Live Data ---
+        const liveMarketDataElement = document.getElementById('liveMarketData');
+        let ws;
+
+        function setupWebSocket() {
+            if (ws) {
+                ws.close();
+            }
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${window.location.host}/ws/live_data`);
+
+            ws.onopen = () => {
+                liveMarketDataElement.innerHTML = '<p>Connected to live data feed. Waiting for ticks...</p>';
+                console.log('WebSocket connected.');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'ticks') {
+                    displayTicks(data.data);
+                }
+            };
+
+            ws.onclose = (event) => {
+                liveMarketDataElement.innerHTML = '<p class="message error">Disconnected from live data feed. Attempting to reconnect...</p>';
+                console.log('WebSocket disconnected:', event.code, event.reason);
+                setTimeout(setupWebSocket, 5000); // Attempt to reconnect after 5 seconds
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                liveMarketDataElement.innerHTML = '<p class="message error">WebSocket error. Check console for details.</p>';
+            };
+        }
+
+        function displayTicks(ticks) {
+            let html = '<h3>Latest Ticks</h3>';
+            if (ticks && ticks.length > 0) {
+                html += '<table><thead><tr><th>Instrument</th><th>LTP</th><th>Timestamp</th></tr></thead><tbody>';
+                ticks.forEach(tick => {
+                    html += `
+                        <tr>
+                            <td>${tick.tradingsymbol || tick.instrument_token}</td>
+                            <td>${tick.last_price}</td>
+                            <td>${new Date(tick.timestamp).toLocaleTimeString()}</td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+            } else {
+                html += '<p>No ticks received yet.</p>';
+            }
+            liveMarketDataElement.innerHTML = html;
+        }
+
+        // --- Open Orders ---
+        const openOrdersList = document.getElementById('openOrdersList');
+
+        async function loadOpenOrders() {
+            try {
+                const response = await fetch('/api/orders');
+                const orders = await response.json();
+                openOrdersList.innerHTML = '';
+                if (orders.length === 0) {
+                    openOrdersList.innerHTML = '<p>No open orders.</p>';
+                    return;
+                }
+                let ordersHtml = '<table><thead><tr><th>Order ID</th><th>Symbol</th><th>Type</th><th>Qty</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+                orders.forEach(order => {
+                    ordersHtml += `
+                        <tr>
+                            <td>${order.order_id}</td>
+                            <td>${order.tradingsymbol}</td>
+                            <td>${order.transaction_type} ${order.order_type}</td>
+                            <td>${order.quantity}</td>
+                            <td>${order.price || 'N/A'}</td>
+                            <td>${order.status}</td>
+                            <td>
+                                <button onclick="modifyOrderPrompt('${order.order_id}', ${order.quantity}, ${order.price || 0}, ${order.trigger_price || 0})">Modify</button>
+                                <button onclick="cancelOrder('${order.order_id}')">Cancel</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                ordersHtml += '</tbody></table>';
+                openOrdersList.innerHTML = ordersHtml;
+            } catch (error) {
+                console.error('Error loading open orders:', error);
+                openOrdersList.innerHTML = '<p class="message error">Error loading open orders.</p>';
+            }
+        }
+
+        async function modifyOrder(orderId, newQuantity, newPrice, newTriggerPrice) {
+            try {
+                const response = await fetch(`/api/orders/${orderId}/modify`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        quantity: newQuantity,
+                        price: newPrice,
+                        trigger_price: newTriggerPrice
+                    })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    alert(result.message);
+                    loadOpenOrders();
+                    loadOrderHistory();
+                } else {
+                    alert(`Failed to modify order: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error modifying order:', error);
+                alert('Error modifying order.');
+            }
+        }
+
+        function modifyOrderPrompt(orderId, currentQuantity, currentPrice, currentTriggerPrice) {
+            const newQuantity = prompt(`Enter new quantity for order ${orderId}:`, currentQuantity);
+            if (newQuantity === null) return;
+            const newPrice = prompt(`Enter new price for order ${orderId} (leave blank if not changing):`, currentPrice);
+            const newTriggerPrice = prompt(`Enter new trigger price for order ${orderId} (leave blank if not changing):`, currentTriggerPrice);
+            
+            modifyOrder(orderId, parseInt(newQuantity), parseFloat(newPrice) || null, parseFloat(newTriggerPrice) || null);
+        }
+
+        async function cancelOrder(orderId) {
+            if (!confirm(`Are you sure you want to cancel order ${orderId}?`)) {
+                return;
+            }
+            try {
+                const response = await fetch(`/api/orders/${orderId}/cancel`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    alert(result.message);
+                    loadOpenOrders();
+                    loadOrderHistory();
+                } else {
+                    alert(`Failed to cancel order: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error cancelling order:', error);
+                alert('Error cancelling order.');
+            }
+        }
+
+        // --- Order History ---
+        const orderHistoryList = document.getElementById('orderHistoryList');
+
+        async function loadOrderHistory() {
+            try {
+                const response = await fetch('/api/trade_history');
+                const trades = await response.json();
+                orderHistoryList.innerHTML = '';
+                if (trades.length === 0) {
+                    orderHistoryList.innerHTML = '<p>No trade history available.</p>';
+                    return;
+                }
+                let historyHtml = '';
+                trades.forEach(trade => {
+                    historyHtml += `
+                        <div class="trade-item">
+                            <strong>Strategy:</strong> ${trade.strategy_name || 'N/A'} (ID: ${trade.strategy_id || 'N/A'})<br>
+                            <strong>Entry Time:</strong> ${new Date(trade.entry_time).toLocaleString()}<br>
+                            <strong>Exit Time:</strong> ${new Date(trade.exit_time).toLocaleString()}<br>
+                            <strong>Total P&L:</strong> ${trade.total_pnl ? trade.total_pnl.toFixed(2) : 'N/A'}<br>
+                            <strong>Status:</strong> ${trade.status}<br>
+                            <strong>Entry Legs:</strong> <pre>${JSON.stringify(JSON.parse(trade.entry_legs_data), null, 2)}</pre>
+                            <strong>Exit Legs:</strong> <pre>${JSON.stringify(JSON.parse(trade.exit_legs_data), null, 2)}</pre>
+                        </div>
+                    `;
+                });
+                orderHistoryList.innerHTML = historyHtml;
+            } catch (error) {
+                console.error('Error loading order history:', error);
+                orderHistoryList.innerHTML = '<p class="message error">Error loading order history.</p>';
             }
         }
     </script>

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from collections import deque
-from typing import Union, List
+from typing import Union, List, Dict
 
 def calculate_sma(data: Union[pd.Series, List[float], deque], window: int) -> float:
     """

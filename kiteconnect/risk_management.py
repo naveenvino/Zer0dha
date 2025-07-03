@@ -93,11 +93,9 @@ def set_target_profit(
         raise DataFetchError(f"Failed to fetch LTP for {tradingsymbol}", original_exception=e)
 
     if target_profit_percentage:
-        price = current_ltp * (1 + target_profit_percentage / 100) if transaction_type == kite.TRANSACTION_TYPE_BUY 
-                else current_ltp * (1 - target_profit_percentage / 100)
+        price = current_ltp * (1 + target_profit_percentage / 100) if transaction_type == kite.TRANSACTION_TYPE_BUY else                 current_ltp * (1 - target_profit_percentage / 100)
     elif target_profit_points:
-        price = current_ltp + target_profit_points if transaction_type == kite.TRANSACTION_TYPE_BUY 
-                else current_ltp - target_profit_points
+        price = current_ltp + target_profit_points if transaction_type == kite.TRANSACTION_TYPE_BUY else                 current_ltp - target_profit_points
 
     # Place LIMIT order
     try:

@@ -1,0 +1,9 @@
+flask>=3.0
+flask-sock
+Flask-Login
+autobahn[twisted]==19.11.2
+service_identity
+python-dateutil
+gunicorn
+kiteconnect
+requests

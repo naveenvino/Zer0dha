@@ -9,3 +9,5 @@ flask>=3.0
 service_identity
 python-dateutil
 mypy
+flask-sock
+Flask-Login
