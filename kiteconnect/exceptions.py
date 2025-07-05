@@ -73,3 +73,11 @@ class NetworkException(KiteException):
     def __init__(self, message: str, code: int = 503) -> None:
         """Initialize the exception."""
         super(NetworkException, self).__init__(message, code)
+
+
+class GTTMarginException(KiteException):
+    """Represents a GTT margin calculation error. Default code is 500."""
+
+    def __init__(self, message: str, code: int = 500) -> None:
+        """Initialize the exception."""
+        super(GTTMarginException, self).__init__(message, code)

@@ -162,6 +162,7 @@ class KiteConnect(object):
         "gtt.info": "/gtt/triggers/{trigger_id}",
         "gtt.modify": "/gtt/triggers/{trigger_id}",
         "gtt.delete": "/gtt/triggers/{trigger_id}",
+        "gtt.margins": "/gtt/margins",
 
         # Margin computation endpoints
         "order.margins": "/margins/orders",
@@ -870,6 +871,13 @@ class KiteConnect(object):
     def delete_gtt(self, trigger_id: str) -> Dict[str, Any]:
         """Delete a GTT order."""
         return self._delete("gtt.delete", url_args={"trigger_id": trigger_id})
+
+    def get_gtt_margins(self, params: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Calculate margins for a GTT order.
+        - `params` is list of orders to retrive margins detail
+        """
+        return self._post("gtt.margins", params=params, is_json=True)
 
     def order_margins(self, params: List[Dict[str, Any]]) -> Dict[str, Any]:
         """

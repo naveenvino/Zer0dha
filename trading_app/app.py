@@ -1,7 +1,8 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, current_app
 from flask_sock import Sock
 from flask_login import LoginManager
+from flask_cors import CORS # Import CORS
 from . import db
 from .api import routes as api_routes
 from .services.kite_service import get_kite_instance, start_ticker_websocket, stop_ticker_websocket
@@ -13,6 +14,7 @@ def create_app(test_config=None):
     # create and configure the app
     setup_logging()
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app) # Enable CORS for all routes
     app.logger.addHandler(logging.getLogger("kiteconnect_logger").handlers[0]) # Add file handler
     app.logger.addHandler(logging.getLogger("kiteconnect_logger").handlers[1]) # Add console handler
     app.logger.setLevel(logging.INFO)

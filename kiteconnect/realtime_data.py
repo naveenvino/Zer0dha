@@ -5,7 +5,6 @@ from typing import Dict, Callable, Optional
 import pandas as pd
 
 from kiteconnect.technical_indicators import calculate_sma, calculate_rsi, calculate_macd, calculate_bollinger_bands, calculate_stochastic_oscillator, calculate_atr
-from kiteconnect.notifications import send_telegram_message
 
 logger = logging.getLogger(__name__)
 

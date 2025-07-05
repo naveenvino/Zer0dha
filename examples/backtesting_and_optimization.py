@@ -1,5 +1,10 @@
 import logging
-from kiteconnect import KiteConnect, run_backtest, calculate_performance_metrics, plot_equity_curve, optimize_strategy_parameters
+from kiteconnect import KiteConnect
+from kiteconnect.backtesting.core import run_backtest
+from kiteconnect.backtesting.metrics import calculate_performance_metrics
+from kiteconnect.backtesting.visualizer import plot_equity_curve
+from kiteconnect.backtesting.optimizer import optimize_strategy_parameters
+from kiteconnect.backtesting.analysis import walk_forward_analysis
 import datetime
 import pandas as pd
 
@@ -52,10 +57,10 @@ def simple_moving_average_strategy_builder(short_window, long_window):
         return trades
     return strategy
 
-# Fetch historical data (example for INFY, daily interval for 90 days)
+# Fetch historical data (example for INFY, daily interval for 365 days)
 try:
     instrument_token = 408065 # Example: INFY instrument token
-    from_date = datetime.datetime.now() - datetime.timedelta(days=90)
+    from_date = datetime.datetime.now() - datetime.timedelta(days=365)
     to_date = datetime.datetime.now()
     interval = "day"
 
@@ -65,6 +70,10 @@ try:
         to_date=to_date,
         interval=interval
     )
+    
+    historical_data_df = pd.DataFrame(historical_data)
+    historical_data_df["date"] = pd.to_datetime(historical_data_df["date"])
+
 
     logging.info("Fetched historical data for INFY.")
 
@@ -105,5 +114,26 @@ try:
     else:
         logging.info("No optimal parameters found.")
 
+    # --- Perform walk-forward analysis ---
+    logging.info("\nPerforming walk-forward analysis...")
+    walk_forward_results = walk_forward_analysis(
+        historical_data=historical_data_df,
+        strategy_builder=simple_moving_average_strategy_builder,
+        param_grid=param_grid,
+        train_period=180,
+        test_period=30,
+        metric="total_profit_loss"
+    )
+
+    logging.info("Walk-Forward Analysis Complete.")
+    for i, result in enumerate(walk_forward_results):
+        logging.info(f"Test Period {i+1} Performance:")
+        for metric, value in result.items():
+            if metric != "equity_curve":
+                logging.info(f"{metric}: {value}")
+        if "equity_curve" in result and not result["equity_curve"].empty:
+            plot_equity_curve(result["equity_curve"], title=f"Walk-Forward Test Period {i+1} Equity Curve")
+
+
 except Exception as e:
-    logging.error(f"Backtesting and optimization failed: {e.message}")
+    logging.error(f"Backtesting and optimization failed: {e}")

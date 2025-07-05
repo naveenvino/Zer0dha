@@ -115,12 +115,10 @@ from kiteconnect.async_connect import AsyncKiteConnect
 from kiteconnect.async_ticker import AsyncKiteTicker
 from kiteconnect.advanced_orders import place_cover_order, place_bracket_order, place_amo_order, place_iceberg_order
 from kiteconnect.portfolio import get_current_portfolio
-from kiteconnect.backtesting import run_backtest
 from kiteconnect.risk_management import set_stop_loss, set_target_profit
 from kiteconnect.historical_data_utils import get_historical_data_dataframe
 from kiteconnect.technical_indicators import calculate_sma
 from kiteconnect.charting import plot_candlestick_chart
-from kiteconnect.notifications import send_telegram_message
 from kiteconnect.config_manager import save_config, load_config
 from kiteconnect.error_handling import KiteConnectError, OrderPlacementError, DataFetchError, InvalidRequestError
 from kiteconnect.logging_config import setup_logging
@@ -128,6 +126,15 @@ from kiteconnect.predictive_models import train_price_prediction_model, predict_
 from kiteconnect.realtime_data import RealtimeMarketDataProcessor
 from kiteconnect.trade_journal import init_db, insert_trade, get_all_trades, get_trades_dataframe, analyze_trades
 from kiteconnect.data_cache import save_historical_data, load_historical_data
+from kiteconnect.backtesting.core import run_backtest
+from kiteconnect.backtesting.metrics import calculate_performance_metrics
+from kiteconnect.backtesting.visualizer import plot_equity_curve
+from kiteconnect.backtesting.optimizer import optimize_strategy_parameters
+from kiteconnect.backtesting.analysis import walk_forward_analysis
+from kiteconnect.risk_management.dashboard import RiskManagementDashboard
+from kiteconnect.risk_management.alerts import PnLAlert
+from kiteconnect.ml import *
+from kiteconnect.notifications import *
 
 __all__ = [
     "KiteConnect",
@@ -169,4 +176,14 @@ __all__ = [
     "analyze_trades",
     "save_historical_data",
     "load_historical_data",
+    "run_backtest",
+    "calculate_performance_metrics",
+    "plot_equity_curve",
+    "optimize_strategy_parameters",
+    "walk_forward_analysis",
+    "RiskManagementDashboard",
+    "PnLAlert",
+    "create_features",
+    "PredictiveModel",
+    "send_email",
 ]
