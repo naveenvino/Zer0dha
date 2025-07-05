@@ -8,3 +8,8 @@ gunicorn
 kiteconnect
 requests
 streamlit
+Flask-Cors
+aiohttp
+websockets
+mplfinance
+scikit-learn
